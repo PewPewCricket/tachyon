@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "limine.h"
 #include "string.h"
+#include "font.h"
 
 // Set the base revision to 3, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
@@ -31,16 +32,24 @@ static volatile LIMINE_REQUESTS_START_MARKER;
 __attribute__((used, section(".limine_requests_end")))
 static volatile LIMINE_REQUESTS_END_MARKER;
 
-// Halt and catch fire function.
 static void hcf(void) {
     for (;;) {
         asm ("hlt");
     }
 }
 
-// The following will be our kernel's entry point.
-// If renaming kmain() to something else, make sure to change the
-// linker script accordingly.
+// Print n bytes of s to the framebuffer at (x, y)
+void putsfb(char* s, uint32_t n, uint32_t x, uint32_t y, uint32_t color, uint32_t* fb_ptr) {
+    for(uint32_t i = 0; i < n; i++){
+        for(uint32_t j = 0; j < 16; j++) {
+            for(uint32_t k = 0; k < 8; k++) {
+                unsigned char bit = ((unsigned char) s[n] && (1 << k));
+                
+            }
+        }
+    }
+}
+
 void kmain(void) {
     // Ensure the bootloader actually understands our base revision (see spec).
     if (LIMINE_BASE_REVISION_SUPPORTED == false) {
@@ -48,8 +57,7 @@ void kmain(void) {
     }
 
     // Ensure we got a framebuffer.
-    if (framebuffer_request.response == NULL
-     || framebuffer_request.response->framebuffer_count < 1) {
+    if (framebuffer_request.response == NULL || framebuffer_request.response->framebuffer_count < 1) {
         hcf();
     }
 
