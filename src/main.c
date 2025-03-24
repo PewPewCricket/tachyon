@@ -38,13 +38,18 @@ static void hcf(void) {
     }
 }
 
-// Print n bytes of s to the framebuffer at (x, y)
-void putsfb(char* s, uint32_t n, uint32_t x, uint32_t y, uint32_t color, uint32_t* fb_ptr) {
+// Print n bytes of s to the framebuffer at (x, y) with a specific bg and fg color
+void putsfb(char* s, uint32_t n, uint32_t x, uint32_t y, uint32_t fg, uint32_t bg, struct limine_framebuffer *fb) {
+    volatile uint32_t *fb_ptr = fb->address;
     for(uint32_t i = 0; i < n; i++){
         for(uint32_t j = 0; j < 16; j++) {
             for(uint32_t k = 0; k < 8; k++) {
-                unsigned char bit = ((unsigned char) s[n] && (1 << k));
-                
+                unsigned char bit = (font_vga8x16[s[i] * 16 + j] << k) & 0b10000000;
+                if(bit) {
+                    fb_ptr[(x * 8 + k) + ((y * 16 + j) * fb->width) + (8 * i)] = fg;
+                } else {
+                    fb_ptr[(x * 8 + k) + ((y * 16 + j) * fb->width) + (8 * i)] = bg;
+                }
             }
         }
     }
@@ -62,13 +67,9 @@ void kmain(void) {
     }
 
     // Fetch the first framebuffer.
-    struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
+    struct limine_framebuffer *fb = framebuffer_request.response->framebuffers[0];
 
-    // Note: we assume the framebuffer model is RGB with 32-bit pixels.
-    for (size_t i = 0; i < 100; i++) {
-        volatile uint32_t *fb_ptr = framebuffer->address;
-        fb_ptr[i * (framebuffer->pitch / 4) + i] = 0xffffff;
-    }
+    putsfb("Hellorld", 8, 0, 0, 0xFFFFFF, 0x0000FF, fb);
 
     // We're done, just hang...
     hcf();

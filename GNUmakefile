@@ -1,7 +1,7 @@
 MAKEFLAGS += -rR
 .SUFFIXES:
 
-override OUTPUT := myos
+override OUTPUT := nerve
 
 CC := cc
 CFLAGS := -g -O3 -pipe
