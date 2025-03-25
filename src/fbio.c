@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <limine.h>
-#include "string.h"
+#include <string.h>
 #include "font.h"
 
 // Print n bytes of s to the framebuffer at (x, y) with a specific bg and fg color

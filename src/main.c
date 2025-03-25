@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <limine.h>
-#include "string.h"
+#include <string.h>
 #include "fbio.h"
 
 // Set the base revision to 3, this is recommended as this is the latest
@@ -52,7 +52,7 @@ void kmain(void) {
     // Fetch the first framebuffer.
     struct limine_framebuffer *fb = framebuffer_request.response->framebuffers[0];
 
-    putsfb("Haiiiiii :3", 0, 0, 0xFFFFFF, 0x0000FF, fb);
+    putsfb("Hello, Kernel!", 0, 0, 0xFFFFFF, 0x0000FF, fb);
 
     // We're done, just hang...
     hcf();

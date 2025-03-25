@@ -36,6 +36,7 @@ override CFLAGS += \
 
 override CPPFLAGS := \
     -I src \
+    -I src/libk \
     $(CPPFLAGS) \
     -DLIMINE_API_REVISION=3 \
     -MMD \
