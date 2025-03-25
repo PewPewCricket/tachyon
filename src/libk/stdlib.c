@@ -1,4 +1,5 @@
 #include <limits.h>
+#include <stdbool.h>
 
 // Taken from: https://www.geeksforgeeks.org/write-your-own-atoi/
 int atoi(const char* s) {
