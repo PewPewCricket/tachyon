@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 void* memcpy(void *dest, const void *src, size_t n) {
 	uint8_t *pdest = (uint8_t *)dest;
@@ -50,4 +51,14 @@ int memcmp(const void *s1, const void *s2, size_t n) {
 	}
 
 	return 0;
+}
+
+int strlen(char* s) {
+	int len = 0;
+	for(;;) {
+		if(s[len] == 0) {
+			return len;
+		}
+		len++;
+	}
 }
