@@ -107,9 +107,9 @@ iso:
 	mkdir -p build/iso_root/boot/limine
 	cp -v src/limine.conf build/limine/limine-bios.sys build/limine/limine-bios-cd.bin build/limine/limine-uefi-cd.bin build/iso_root/boot/limine/
 
-	mkdir -p build/iso_root/EFI/BOOT
-	cp -v build/limine/BOOTX64.EFI build/iso_root/EFI/BOOT/
-	cp -v build/limine/BOOTIA32.EFI build/iso_root/EFI/BOOT/
+	mkdir -p build/iso_root//boot/EFI/BOOT
+	cp -v build/limine/BOOTX64.EFI build/iso_root/boot/EFI/BOOT/
+	cp -v build/limine/BOOTIA32.EFI build/iso_root/boot/EFI/BOOT/
 
 	xorriso -as mkisofs -R -r -J -b boot/limine/limine-bios-cd.bin \
 	-no-emul-boot -boot-load-size 4 -boot-info-table -hfsplus \
@@ -121,4 +121,13 @@ iso:
 
 .PHONY: test
 test:
+	
+
+.PHONY: run
+run:
 	qemu-system-x86_64 -cdrom build/image.iso
+
+.PHONY: debug
+debug:
+	qemu-system-x86_64 -cdrom build/image.iso -s -S &
+	gdb -ex "target remote localhost:1234" build/bin/$(OUTPUT)
