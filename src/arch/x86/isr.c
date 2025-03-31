@@ -13,7 +13,7 @@ void isr_exception(uint32_t err) {
         default:
             asm("cli");
             for (;;) {
-                asm("hlt")
+                asm("hlt");
             }
     }
 

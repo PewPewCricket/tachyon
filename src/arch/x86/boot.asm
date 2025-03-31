@@ -33,8 +33,8 @@ section .text
 global _start:function (_start.end - _start)
 _start:
     ; 16KB of stack space
-    mov ebp, [stack_top]
-    mov esp, [stack_top]
+    mov ebp, stack_top
+    mov esp, stack_top
 
     ; Clear EFLAGS
     mov ecx, 0x0
@@ -57,6 +57,8 @@ _start:
 
 section .bss
 
+; NASM gets mad at the stack being allocated here, ignore the 1001 warnings
+; it throws, they are harmless. (I think?)
 align 16
 stack_bottom:
     resb 16384

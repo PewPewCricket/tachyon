@@ -35,7 +35,8 @@ override CFLAGS += \
 
 override CPPFLAGS := \
     -I src \
-    -I src/libk \
+    -I src/include \
+    -I src/include/lib \
     $(CPPFLAGS) \
     -MMD \
     -MP

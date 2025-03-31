@@ -1,10 +1,12 @@
 #include <stdint.h>
 #include <string.h>
-#include "font.h"
+#include <boot_info.h>
+
+#include "builtin_font.h"
 
 // Print n bytes of s to the framebuffer at (x, y) with a specific bg and fg color
-int putsnfb(char* s, uint32_t n, uint32_t x, uint32_t y, uint32_t fg, uint32_t bg, struct framebuffer *fb) {
-    volatile uint32_t *fb_ptr = fb->address;
+int putsnfb(char* s, uint32_t n, uint32_t x, uint32_t y, uint32_t fg, uint32_t bg, struct fb* fb) {
+    volatile uint32_t *fb_ptr = fb->addr;
     int num_printed = 0;
 
     for(uint32_t i = 0; i < n; i++){
@@ -25,8 +27,12 @@ int putsnfb(char* s, uint32_t n, uint32_t x, uint32_t y, uint32_t fg, uint32_t b
 }
 
 // Print s to the framebuffer at (x, y) with a specific bg and fg color, s must end with a NULL terminator
-int putsfb(char* s, uint32_t x, uint32_t y, uint32_t fg, uint32_t bg, struct framebuffer *fb) {
+int putsfb(char* s, uint32_t x, uint32_t y, uint32_t fg, uint32_t bg, struct fb* fb) {
     int len = strlen(s);
     int printed = putsnfb(s, (uint32_t) len, x, y, fg, bg, fb);
     return printed;
+}
+
+int writefb(char* s, struct fb* fb) {
+    
 }
