@@ -1,49 +1,40 @@
-OUTPUT_FORMAT(elf64-x86-64)
-ENTRY(start)
-
-ENTRY(start)
+OUTPUT_FORMAT(elf32-i386)
+ENTRY(_start)
 
 PHDRS {
-    boot PT_LOAD;
     text PT_LOAD;
-    rodata PT_LOAD;
     data PT_LOAD;
+    rodata PT_LOAD;
 }
 
-SECTIONS {
-    . = 0xffffffff80000000;
+SECTIONS
+{
+	. = 2M;
 
-    .boot :
+    .text BLOCK(4K) : ALIGN(4K) {
+        KEEP(*(.multiboot));
+        *(.text)
+    } : text
+
+	/* Read-only data. */
+    .rodata BLOCK(4K) : ALIGN(4K)
     {
-        /* ensure that the multiboot header is at the beginning */
-        *(.multiboot_header)
-    }
-
-    . = ALIGN(CONSTANT(MAXPAGESIZE));
-
-    .text : {
-        *(.text .text.*)
-    } :text
-
-    . = ALIGN(CONSTANT(MAXPAGESIZE));
-
-    .rodata : {
-        *(.rodata .rodata.*)
+        *(.rodata)
     } :rodata
 
-    . = ALIGN(CONSTANT(MAXPAGESIZE));
-
-    .data : {
-        *(.data .data.*)
+    /* Read-write data (initialized) */
+    .data BLOCK(4K) : ALIGN(4K)
+    {
+        *(.data)
     } :data
 
-    .bss : {
-        *(.bss .bss.*)
+    /* Read-write data (uninitialized) and stack */
+    .bss BLOCK(4K) : ALIGN(4K)
+    {
         *(COMMON)
+        *(.bss)
     } :data
 
-    /DISCARD/ : {
-        *(.eh_frame*)
-        *(.note .note.*)
-    }
+	/* The compiler may produce other sections, by default it will put them in
+	   a segment with the same name. Simply add stuff here as needed. */
 }
