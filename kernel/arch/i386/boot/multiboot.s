@@ -17,8 +17,6 @@
 
 # The funny dogshit code that sets everything up
 
-.intel_syntax
-
 .section .multiboot
 .align 8
 
@@ -43,3 +41,12 @@ mb2h_tag_end:
   .word 0
   .long 8
 mb2h_end:
+
+.section .text
+
+.global _start
+.type _start, @function
+_start:
+1:  cli
+    hlt
+    jmp 1b

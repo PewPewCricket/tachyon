@@ -1,60 +1,54 @@
-HOSTARCH 				?= i386
+export
 
-CFLAGS					?= -O2 -g
-CPPFLAGS				?=
-LDFLAGS					?=
-LIBS					?=
+VERSION = 0.1.0
 
-DESTDIR					?=
-PREFIX					?= /usr/local
-BOOTDIR					?= /boot
-INCLUDEDIR				?= $(PREFIX)/include
+PDIR := $(SRCDIR)/kernel
 
-CFLAGS					:= $(CFLAGS) -ffreestanding -Wall -Wextra
-CPPFLAGS				:= $(CPPFLAGS) -D__is_kernel -Iinclude
-LDFLAGS					:= $(LDFLAGS)
-LIBS					:= $(LIBS) -nostdlib -lgcc
+CFLAGS += \
+	-I. \
+	-I$(PDIR)/arch/$(ARCH_DIR)/include \
+	-I$(PDIR)/include \
+	-I$(PDIR)
 
-ARCHDIR					= arch/$(HOSTARCH)
+ASFLAGS += \
+	-I. \
+	-I$(PDIR)/arch/$(ARCH_DIR)/include \
+	-I$(PDIR)/include \
+	-I$(PDIR)
 
-include $(ARCHDIR)/make.config
+SRCFILES := $(shell cd $(PDIR) && find -L * -type f | grep -v "arch" | LC_ALL=C sort)
+CFILES := $(filter %.c,$(SRCFILES))
+OBJ := $(CFILES:.c=.c.o)
+ARCH_OBJ := $(shell cd $(PDIR) && find -L arch/$(ARCH_DIR) -name "*.o" -type f | LC_ALL=C sort)
+HEADER_DEPS := $(CFILES:.c=.c.d)
+OUTPUT := kernel-$(VERSION)-$(ARCH)
 
-CFLAGS:=$(CFLAGS) $(KERNEL_ARCH_CFLAGS)
-CPPFLAGS:=$(CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
-LDFLAGS:=$(LDFLAGS) $(KERNEL_ARCH_LDFLAGS)
-LIBS:=$(LIBS) $(KERNEL_ARCH_LIBS)
-
-override OUTPUT			:= kernel.elf
-override SRCFILES		:= $(shell find -L kernel/* -type f | LC_ALL=C sort)
-override ARCHFILES		:= $(shell find -L $(ARCHDIR)/* -type f | LC_ALL=C sort)
-override CFILES			:= $(filter %.c,$(SRCFILES))
-override ASFILES	    := $(filter %.s,$(ARCHFILES))
-override OBJS			:= $(CFILES:.c=.c.o) $(ASFILES:.s=.s.o)
-override HEADER_DEPS	:= $(CFILES:.c=.c.d) $(ASFILES:.s=.s.d)
-
-.PHONY: all clean install install-headers install-kernel
 all: $(OUTPUT)
 
-$(OUTPUT): $(ARCHDIR)/linker.ld $(OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(LIBS) $(OBJS) -o $@
+$(OUTPUT): arch/ $(OBJ) 
+	@$(eval ARCH_OBJ=$(shell cd $(PDIR) && find -L arch/$(ARCH_DIR) -name "*.o" -type f | LC_ALL=C sort))
+	@echo "  LD      " $@
+	@$(LD) $(LDFLAGS) $(OBJ) $(ARCH_OBJ) -o $@ -T $(PDIR)/arch/$(ARCH_DIR)/linker.ld
 
-kernel/%.c.o: kernel/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
-	
-$(ARCHDIR)/%.s.o: $(ARCHDIR)/%.s
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+%.c.o: %.c
+	@echo "  CC      " $<
+	@$(CC) $(CFLAGS) -c $< -o $@
 
-clean:
-	rm -f $(OUTPUT) $(OBJS) $(HEADER_DEPS)
+.PHONY: arch/
+arch/: $(OBJ) arch/$(ARCH_DIR)/Makefile
+	@echo "  MK      " kernel/$@/$(ARCH_DIR)
+	@$(MAKE) -C $@/$(ARCH_DIR) $(param)
 
-install: install-headers install-kernel
+.PHONY: install
+install: all
+	@echo "Installing kernel-$(VERSION)-$(ARCH) into $(DESTDIR)/boot/"
+	@mkdir -p $(DESTDIR)/boot
+	@cp kernel-$(VERSION)-$(ARCH) $(DESTDIR)/boot/kernel
 
-install-headers:
-	mkdir -p $(DESTDIR)$(INCLUDEDIR)
-	cp -R --preserve=timestamps include/. $(DESTDIR)$(INCLUDEDIR)/.
-
-install-kernel: $(OUTPUT)
-	mkdir -p $(DESTDIR)$(BOOTDIR)
-	cp $(OUTPUT) $(DESTDIR)$(BOOTDIR)
+.PHONY: clean
+clean: param = clean
+clean: $(OBJ) arch/
+	@echo "  RM      " $(OBJ) $(HEADER_DEPS)
+	@rm -r $(OBJ) $(shell cd $(PDIR) && find -L * -name "*.d" -type f | LC_ALL=C sort)
 
 -include $(HEADER_DEPS)

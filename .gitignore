@@ -1,1 +1,7 @@
 examples
+*.o
+*.d
+nerve-os.iso
+kernel/kernel-*-*
+sysroot
+iso
