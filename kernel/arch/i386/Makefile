@@ -4,7 +4,12 @@ ASFILES := $(filter %.s,$(SRCFILES))
 OBJ := $(CFILES:.c=.c.o) $(ASFILES:.s=.s.o)
 HEADER_DEPS := $(CFILES:.c=.c.d) $(ASFILES:.s=.s.d)
 
-all: $(OBJ)
+all: all.a
+
+all.a: $(OBJ)
+	@echo "  AR      " $@
+	@ar rcs $@ $(OBJ)
+	@ranlib $@
 
 %.c.o: %.c
 	@echo "  CC      " $<
@@ -12,11 +17,11 @@ all: $(OBJ)
 
 %.s.o: %.s
 	@echo "  AS      " $<
-	@$(AS) $(ASFLAGS) -c $< -o $@
+	@$(AS) $(ASFLAGS) -Wa,-MD=$<.d -c $< -o $@
 
 .PHONY: clean
-clean: $(OBJ)
-	@echo "  RM      " $(OBJ) $(HEADER_DEPS)
-	@rm -r $(OBJ) $(shell cd $(PDIR)/arch/$(ARCH_DIR) && find -L * -name "*.d" -type f | LC_ALL=C sort)
+clean: $(OBJ) all.a
+	@echo "  RM      " $(OBJ) $(HEADER_DEPS) all.a
+	-@rm -rf $(OBJ) all.a $(HEADER_DEPS)
 
 -include $(HEADER_DEPS)

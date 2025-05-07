@@ -11,6 +11,20 @@
 
 export
 
+CFLAGS += \
+	-I. \
+	-I$(PDIR)/arch/$(ARCH_DIR)/include \
+	-I$(PDIR)/include \
+	-I$(PDIR) \
+	-Ilibc/include \
+	-MD
+
+ASFLAGS += \
+	-I. \
+	-I$(PDIR)/arch/$(ARCH_DIR)/include \
+	-I$(PDIR)/include \
+	-I$(PDIR)
+
 ifeq ($(SRCDIR),)
 SRCDIR := $(shell pwd)
 endif
@@ -35,22 +49,39 @@ endif
 DESTDIR = $(BUILDDIR)/sysroot
 
 # Targets for everything
-.PHONY: build-all install-all clean-all
-build-all: build-kernel
-install-all: install-kernel
-clean-all: clean-kernel
+.PHONY: install clean
+all: build-kernel build-libc
+install: install-kernel install-libc
+clean: clean-kernel clean-libc
 	-@rm -r iso sysroot serve-os.iso
 
 # Kernel Targets
 .PHONY: build-kernel clean-kernel install-kernel
-build-kernel:
-	$(MAKE) -C $(SRCDIR)/kernel/
+build-kernel: build-libc
+	@echo "  MK      " kernel/
+	@$(MAKE) -C $(SRCDIR)/kernel/
 
-install-kernel:
-	$(MAKE) -C $(SRCDIR)/kernel/ install
+install-kernel: 
+	@echo "  MK      " kernel/
+	@$(MAKE) -C $(SRCDIR)/kernel/ install
 
 clean-kernel:
-	$(MAKE) -C $(SRCDIR)/kernel/ clean
+	@echo "  MK      " kernel/
+	@$(MAKE) -C $(SRCDIR)/kernel/ clean
+
+# Libc Targets
+.PHONY: build-libc clean-libc install-libc
+build-libc:
+	@echo "  MK      " libc/
+	@$(MAKE) -C $(SRCDIR)/libc/
+
+install-libc:
+	@echo "  MK      " libc/
+	@$(MAKE) -C $(SRCDIR)/libc/ install
+
+clean-libc:
+	@echo "  MK      " libc/
+	@$(MAKE) -C $(SRCDIR)/libc/ clean
 
 # Kernel ISO assembly
 .PHONY: try

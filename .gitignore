@@ -5,3 +5,4 @@ nerve-os.iso
 kernel/kernel-*-*
 sysroot
 iso
+*.a
