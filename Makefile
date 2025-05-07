@@ -13,17 +13,17 @@ export
 
 CFLAGS += \
 	-I. \
-	-I$(PDIR)/arch/$(ARCH_DIR)/include \
-	-I$(PDIR)/include \
-	-I$(PDIR) \
-	-Ilibc/include \
+	-I$(SRCDIR)/kernel/arch/$(ARCH_DIR)/include \
+	-I$(SRCDIR)/kernel/include \
+	-I$(SRCDIR)/kernel \
+	-I$(SRCDIR)/libc/include \
 	-MD
 
 ASFLAGS += \
 	-I. \
-	-I$(PDIR)/arch/$(ARCH_DIR)/include \
-	-I$(PDIR)/include \
-	-I$(PDIR)
+	-I$(SRCDIR)/kernel/arch/$(ARCH_DIR)/include \
+	-I$(SRCDIR)/kernel/include \
+	-I$(SRCDIR)/kernel
 
 ifeq ($(SRCDIR),)
 SRCDIR := $(shell pwd)
