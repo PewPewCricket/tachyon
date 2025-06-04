@@ -1,43 +1,35 @@
 export
 
-VERSION = 0.1.0
+SDIR := $(SRC_DIR)/kernel
+BDIR := $(BUILD_DIR)/kernel
 
-PDIR := $(SRCDIR)/kernel
+SRC_FILES := $(shell cd $(SDIR) && find -L * -type f | grep -v "arch" | LC_ALL=C sort)
+CFILES := $(filter %.c,$(SRC_FILES))
 
-SRCFILES := $(shell cd $(PDIR) && find -L * -type f | grep -v "arch" | LC_ALL=C sort)
-CFILES := $(filter %.c,$(SRCFILES))
-OBJ := $(CFILES:.c=.c.o)
-ARCH_OBJ := $(PDIR)/arch/$(ARCH_DIR)/all.a
-HEADER_DEPS := $(CFILES:.c=.c.d)
-OUTPUT := kernel-$(VERSION)-$(ARCH)
+OBJS := $(addprefix $(BDIR)/, $(CFILES:.c=.c.o))
+HEADER_DEPS := $(addprefix $(BDIR)/, $(CFILES:.c=.c.d))
+ARCH_OBJ := $(BDIR)/arch/$(ARCH_DIR)/$(ARCH).a
+OUTPUT := $(BUILD_DIR)/kernel.img
+
+CFLAGS += \
+	-I$(SRC_DIR)/kernel/arch/$(ARCH_DIR)/include \
+	-I$(SRC_DIR)/kernel/include \
+	-I$(SRC_DIR)/kernel \
+	-I$(SRC_DIR)/libk/include
 
 all: $(OUTPUT)
 
 $(OUTPUT): $(OBJ) $(ARCH_OBJ)
-	@echo "  LD      " $@
-	@$(LD) $(LDFLAGS) $(OBJ) $(ARCH_OBJ) $(SRCDIR)/libc/libk.a -o $@ -T $(PDIR)/arch/$(ARCH_DIR)/linker.ld
-
-%.c.o: %.c
-	@echo "  CC      " $<
-	@$(CC) $(CFLAGS) -c $< -o $@
+	$(LD) $(LDFLAGS) $(OBJS) $(ARCH_OBJ) $(BUILD_DIR)/libk/libk.a -o $@ -T $(SDIR)/arch/$(ARCH_DIR)/linker.ld
 
 $(ARCH_OBJ): arch/$(ARCH_DIR)/Makefile
-	@echo "  MK      " kernel/arch/$(ARCH_DIR)
-	@$(MAKE) -C $(PDIR)/arch/$(ARCH_DIR)
+	$(MAKE) -C $(SDIR)/arch/$(ARCH_DIR)
 
+$(BDIR)/%.c.o: $(SDIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-
-.PHONY: install
-install: all
-	@echo "Installing kernel-$(VERSION)-$(ARCH) into $(DESTDIR)/boot/"
-	@mkdir -p $(DESTDIR)/boot
-	@cp kernel-$(VERSION)-$(ARCH) $(DESTDIR)/boot/kernel
-
-.PHONY: clean
-clean:
-	@echo "  RM      " $(OBJ) $(HEADER_DEPS) $(OUTPUT)
-	-@rm -rf $(OBJ) $(HEADER_DEPS) $(OUTPUT)
-	@echo "  MK      " kernel/arch/$(ARCH_DIR)
-	@$(MAKE) -C $(PDIR)/arch/$(ARCH_DIR) clean
+$(BDIR)/%.c.d: $(SDIR)/%.c $(OBJS)
+	$(CC) $(CFLAGS) -MM $< -MF $@
 
 -include $(HEADER_DEPS)

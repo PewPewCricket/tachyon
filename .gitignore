@@ -6,3 +6,4 @@ kernel/kernel-*-*
 sysroot
 iso
 *.a
+build/

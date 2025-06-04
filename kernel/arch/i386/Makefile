@@ -1,27 +1,29 @@
-SRCFILES := $(shell cd $(PDIR)/arch/$(ARCH_DIR) && find -L * -type f | grep -v "arch" | LC_ALL=C sort)
-CFILES := $(filter %.c,$(SRCFILES))
-ASFILES := $(filter %.s,$(SRCFILES))
-OBJ := $(CFILES:.c=.c.o) $(ASFILES:.s=.s.o)
-HEADER_DEPS := $(CFILES:.c=.c.d) $(ASFILES:.s=.s.d)
+SDIR := $(SRC_DIR)/kernel/arch/$(ARCH_DIR)
+BDIR := $(BUILD_DIR)/kernel/arch/$(ARCH_DIR)
 
-all: all.a
+SRC_FILES := $(shell cd $(SDIR) && find -L * -type f | LC_ALL=C sort)
+CFILES := $(filter %.c,$(SRC_FILES))
+ASFILES := $(filter %.s,$(SRC_FILES))
 
-all.a: $(OBJ)
-	@echo "  AR      " $@
-	@ar rcs $@ $(OBJ)
-	@ranlib $@
+OBJS := $(addprefix $(BDIR)/, $(CFILES:.c=.c.o) $(ASFILES:.s=.s.o))
+HEADER_DEPS := $(addprefix $(BDIR)/, $(CFILES:.c=.c.d) $(ASFILES:.s=.s.d))
 
-%.c.o: %.c
-	@echo "  CC      " $<
-	@$(CC) $(CFLAGS) -c $< -o $@
+all: $(BDIR)/$(ARCH).a
 
-%.s.o: %.s
-	@echo "  AS      " $<
-	@$(AS) $(ASFLAGS) -Wa,-MD=$<.d -c $< -o $@
+$(BDIR)/$(ARCH).a: $(OBJS)
+	ar rcs $@ $(OBJS)
+	ranlib $@
 
-.PHONY: clean
-clean: $(OBJ) all.a
-	@echo "  RM      " $(OBJ) $(HEADER_DEPS) all.a
-	-@rm -rf $(OBJ) all.a $(HEADER_DEPS)
+$(BDIR)/%.c.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
--include $(HEADER_DEPS)
+$(BDIR)/%.s.o: %.s
+	@mkdir -p $(dir $@)
+	$(CC) $(ASFLAGS) -c $< -o $@
+
+$(BDIR)/%.c.d: $(SDIR)/%.c $(OBJS)
+	$(CC) $(CFLAGS) -MM $< -MF $@
+
+$(BDIR)/%.s.d: $(SDIR)/%.s $(OBJS)
+	$(CC) $(ASFLAGS) -MM $< -MF $@
