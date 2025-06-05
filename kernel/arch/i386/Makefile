@@ -12,13 +12,12 @@ all: $(BDIR)/$(ARCH).a
 
 $(BDIR)/$(ARCH).a: $(OBJS)
 	ar rcs $@ $(OBJS)
-	ranlib $@
 
-$(BDIR)/%.c.o: %.c
+$(BDIR)/%.c.o: $(SDIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BDIR)/%.s.o: %.s
+$(BDIR)/%.s.o: $(SDIR)/%.s
 	@mkdir -p $(dir $@)
 	$(CC) $(ASFLAGS) -c $< -o $@
 

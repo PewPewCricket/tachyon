@@ -9,7 +9,7 @@ CFILES := $(filter %.c,$(SRC_FILES))
 OBJS := $(addprefix $(BDIR)/, $(CFILES:.c=.c.o))
 HEADER_DEPS := $(addprefix $(BDIR)/, $(CFILES:.c=.c.d))
 ARCH_OBJ := $(BDIR)/arch/$(ARCH_DIR)/$(ARCH).a
-OUTPUT := $(BUILD_DIR)/kernel.img
+OUTPUT := $(BUILD_DIR)/kernel.elf
 
 CFLAGS += \
 	-I$(SRC_DIR)/kernel/arch/$(ARCH_DIR)/include \

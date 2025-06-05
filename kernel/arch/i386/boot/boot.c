@@ -15,9 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdint.h>
+
 #include <gdt.h>
 
-void boot() {
+void boot(uint32_t* mb2_ptr) {
     // TODO: parse mb2 data
 
     // Set up GDT
@@ -25,10 +27,10 @@ void boot() {
     encodeGdtEntry(&gdts[0], 0, 0, 0, 0);               // Null Descriptor
     encodeGdtEntry(&gdts[1], 0, 0xFFFFF, 0x9A, 0xC);    // Kernel Code
     encodeGdtEntry(&gdts[2], 0, 0xFFFFF, 0x92, 0xC);    // Kernel Data
-    encodeGdtEntry(&gdts[2], 0, 0xFFFFF, 0xFA, 0xC);    // User Code
-    encodeGdtEntry(&gdts[2], 0, 0xFFFFF, 0xF2, 0xC);    // User Data
+    encodeGdtEntry(&gdts[3], 0, 0xFFFFF, 0xFA, 0xC);    // User Code
+    encodeGdtEntry(&gdts[4], 0, 0xFFFFF, 0xF2, 0xC);    // User Data
 
     gdtInit(gdts, 5);
-    
+
     while(1);
 }

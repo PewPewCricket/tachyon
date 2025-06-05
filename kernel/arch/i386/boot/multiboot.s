@@ -42,6 +42,15 @@ mb2h_tag_end:
     .long 8
 mb2h_end:
 
+.section .bss
+
+# 16KB of stack space
+.align 16
+stack_bottom:
+.skip 16384
+stack_top:
+
+
 .section .text
 
 .extern boot
@@ -49,5 +58,9 @@ mb2h_end:
 .global _start
 .type _start, @function
 _start:
+    # setup stack 
+    mov $stack_top, %ebp
+    mov $stack_top, %esp
+
     pushl %ebx
     call boot

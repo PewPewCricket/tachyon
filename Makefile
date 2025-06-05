@@ -10,10 +10,7 @@ endif
 include $(SRC_DIR)/configs/$(CONFIG).mk
 
 .PHONY: all clean
-all: $(BUILD_DIR)/kernel.img
-
-$(BUILD_DIR)/kernel.img: kernel-build
-
+all: kernel-build
 
 kernel-build: libk-build
 	$(MAKE) -C kernel
