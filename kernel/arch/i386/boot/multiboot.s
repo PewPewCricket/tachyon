@@ -1,4 +1,4 @@
-/* Nerve Operating System Kernel
+/* Tachyon Kernel
  * Copyright (C) 2025 PewPewCricket
  *
  * This program is free software: you can redistribute it and/or modify
