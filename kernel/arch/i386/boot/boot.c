@@ -18,19 +18,19 @@
 #include <stdint.h>
 
 #include <gdt.h>
+#include <idt.h>
+
+extern void kmain();
 
 void boot(uint32_t* mb2_ptr) {
     // TODO: parse mb2 data
 
     // Set up GDT
-    struct GDT gdts[5];
-    encodeGdtEntry(&gdts[0], 0, 0, 0, 0);               // Null Descriptor
-    encodeGdtEntry(&gdts[1], 0, 0xFFFFF, 0x9A, 0xC);    // Kernel Code
-    encodeGdtEntry(&gdts[2], 0, 0xFFFFF, 0x92, 0xC);    // Kernel Data
-    encodeGdtEntry(&gdts[3], 0, 0xFFFFF, 0xFA, 0xC);    // User Code
-    encodeGdtEntry(&gdts[4], 0, 0xFFFFF, 0xF2, 0xC);    // User Data
+    init_gdt();
 
-    gdtInit(gdts, 5);
+    // Set up IDT
+    init_idt();
 
-    while(1);
+    // Jump to main loop
+    kmain();
 }

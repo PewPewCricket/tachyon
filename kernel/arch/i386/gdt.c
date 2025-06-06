@@ -20,27 +20,42 @@
 
 #include <gdt.h>
 
-int encodeGdtEntry(struct GDT* gdt, int base, int limit, uint8_t access, uint8_t flags) {
-    if (limit < 0xFFFFF) return -1;
+static uint64_t gdt[6];
 
-    gdt->baseLow = (uint16_t) base;
-    gdt->baseMid = (uint8_t) base >> 16;
-    gdt->baseHigh = (uint8_t) base >> 24;
+int encode_gdt_entry(uint64_t* entry, uint32_t base, uint32_t limit, uint8_t access, uint8_t flags) {
+    if (limit > 0xFFFFF) return -1;
+    uint8_t* target = (uint8_t*) entry;
 
-    gdt->limitLow = (uint16_t) limit;
-    gdt->limitHigh = (uint8_t) limit >> 16 & 0b1111;
-
-    gdt->access = access;
-
-    gdt->flags = flags & 0b1111;
+    // Encode the limit
+    target[0] = limit & 0xFF;
+    target[1] = (limit >> 8) & 0xFF;
+    target[6] = (limit >> 16) & 0x0F;
+    
+    // Encode the base
+    target[2] = base & 0xFF;
+    target[3] = (base >> 8) & 0xFF;
+    target[4] = (base >> 16) & 0xFF;
+    target[7] = (base >> 24) & 0xFF;
+    
+    // Encode the access byte
+    target[5] = access;
+    
+    // Encode the flags
+    target[6] |= (flags << 4);
 
     return 0;
 }
 
-void gdtInit(struct GDT* gdts, int n) {
+int init_gdt() {
+    if (encode_gdt_entry(&gdt[0], 0, 0, 0, 0) < 0)            return -1;  // Null Desc.
+    if (encode_gdt_entry(&gdt[1], 0, 0xFFFFF, 0x9A, 0xC) < 0) return -1;  // Kernel Code
+    if (encode_gdt_entry(&gdt[2], 0, 0xFFFFF, 0x92, 0xC) < 0) return -1;  // Kernel Data
+    if (encode_gdt_entry(&gdt[3], 0, 0xFFFFF, 0xFA, 0xC) < 0) return -1;  // User Code
+    if (encode_gdt_entry(&gdt[4], 0, 0xFFFFF, 0xF2, 0xC) < 0) return -1;  // User Data
+
     struct GDTR gdtr;
-    gdtr.size = sizeof(struct GDT) * n - 1;
-    gdtr.offset = (uint32_t)gdts;
+    gdtr.size = sizeof(uint64_t) * 5;
+    gdtr.offset = (uint32_t)gdt;
 
     // Load the GDT
     asm volatile ("lgdt %0" : : "m"(gdtr));
@@ -57,4 +72,6 @@ void gdtInit(struct GDT* gdts, int n) {
         "next:\n"
         : : : "memory", "ax"
     );
+
+    return 0;
 }
