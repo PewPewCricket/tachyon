@@ -18,7 +18,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <gdt.h>
+struct gdtr {
+    uint16_t size;
+    uint32_t offset;
+} __attribute__((packed));
+
+int encode_gdt_entry(uint64_t* entry, uint32_t base, uint32_t limit, uint8_t access, uint8_t flags);
 
 static uint64_t gdt[6];
 
@@ -53,7 +58,7 @@ int init_gdt() {
     if (encode_gdt_entry(&gdt[3], 0, 0xFFFFF, 0xFA, 0xC) < 0) return -1;  // User Code
     if (encode_gdt_entry(&gdt[4], 0, 0xFFFFF, 0xF2, 0xC) < 0) return -1;  // User Data
 
-    struct GDTR gdtr;
+    struct gdtr gdtr;
     gdtr.size = sizeof(uint64_t) * 5;
     gdtr.offset = (uint32_t)gdt;
 

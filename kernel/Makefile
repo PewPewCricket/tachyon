@@ -32,10 +32,12 @@ $(BDIR)/%.s.o: $(SDIR)/%.s
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BDIR)/%.c.d: $(SDIR)/%.c $(OBJS)
+$(BDIR)/%.c.d: $(SDIR)/%.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -MM $< -MF $@
 
-$(BDIR)/%.s.d: $(SDIR)/%.s $(OBJS)
+$(BDIR)/%.s.d: $(SDIR)/%.s
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -MM $< -MF $@
 
 -include $(HEADER_DEPS)

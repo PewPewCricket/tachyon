@@ -1,3 +1,20 @@
+/* Tachyon Kernel
+ * Copyright (C) 2025 PewPewCricket
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include <stdint.h>
 
 #include <idt.h>
@@ -33,7 +50,7 @@ int init_idt() {
     idtr.limit = (uint16_t)sizeof(struct idtEntry) * 256 - 1;
 
     __asm__ volatile ("lidt %0" : : "m"(idtr));
-    __asm__ volatile ("sti"); // Enable interupts
+    // __asm__ volatile ("sti"); // Enable interupts
 
     return 0;
 }

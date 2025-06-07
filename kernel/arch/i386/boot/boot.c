@@ -17,20 +17,63 @@
 
 #include <stdint.h>
 
-#include <gdt.h>
 #include <idt.h>
+#include <video/framebuffer.h>
+#include <multiboot2.h>
+#include <drivers/serial.h>
+#include <video/console.h>
 
-extern void kmain();
+void kmain();
+int init_gdt();
 
-void boot(uint32_t* mb2_ptr) {
-    // TODO: parse mb2 data
+void boot(uint32_t* mb2_data) {
+    struct framebuffer boot_fb = {0};
 
-    // Set up GDT
+    uint8_t* tag_ptr = (uint8_t*)mb2_data;
+    uint32_t total_size = *(uint32_t*)tag_ptr;
+    tag_ptr += 8; // Skip total_size and reserved
+
+    while (tag_ptr < ((uint8_t*)mb2_data) + total_size) {
+        uint32_t tag_type = *(uint32_t*)tag_ptr;
+        uint32_t tag_size = *(uint32_t*)(tag_ptr + 4);
+
+        if (tag_type == MULTIBOOT_TAG_TYPE_FRAMEBUFFER) {
+            struct multiboot_tag_framebuffer* fb_tag = (struct multiboot_tag_framebuffer*)tag_ptr;
+
+            // Common fields
+            boot_fb.address = (void*)(uintptr_t)fb_tag->common.framebuffer_addr;
+            boot_fb.pitch   = fb_tag->common.framebuffer_pitch;
+            boot_fb.width   = fb_tag->common.framebuffer_width;
+            boot_fb.height  = fb_tag->common.framebuffer_height;
+            boot_fb.bpp     = fb_tag->common.framebuffer_bpp;
+
+            if (fb_tag->common.framebuffer_type == MULTIBOOT_FRAMEBUFFER_TYPE_RGB) {
+                // RGB framebuffer
+                boot_fb.red_field_pos   = fb_tag->framebuffer_red_field_position;
+                boot_fb.red_mask_size   = fb_tag->framebuffer_red_mask_size;
+                boot_fb.green_field_pos = fb_tag->framebuffer_green_field_position;
+                boot_fb.green_mask_size = fb_tag->framebuffer_green_mask_size;
+                boot_fb.blue_field_pos  = fb_tag->framebuffer_blue_field_position;
+                boot_fb.blue_mask_size  = fb_tag->framebuffer_blue_mask_size;
+            } else if (fb_tag->common.framebuffer_type == MULTIBOOT_FRAMEBUFFER_TYPE_INDEXED) {
+                // Indexed (palette) framebuffer
+                // TODO: Handle palette framebuffer
+            } else if (fb_tag->common.framebuffer_type == MULTIBOOT_FRAMEBUFFER_TYPE_EGA_TEXT) {
+                // EGA text framebuffer
+                // TODO: Handle EGA text framebuffer
+            }
+        }
+
+        // Tags are aligned to 8 bytes
+        tag_ptr += (tag_size + 7) & ~7;
+    }
+
     init_gdt();
-
-    // Set up IDT
     init_idt();
+    // Setup APIC here, serial will die without it
 
-    // Jump to main loop
+    serial_init();
+    kcon_init(&boot_fb, 0);
+    kcon_set_mode(KCON_BOTH);
     kmain();
 }

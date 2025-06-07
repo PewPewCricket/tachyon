@@ -7,3 +7,4 @@ sysroot
 iso
 *.a
 build/
+.vscode

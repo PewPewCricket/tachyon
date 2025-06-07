@@ -16,8 +16,13 @@
  */
 
 #include <string.h>
+#include <stdint.h>
+
+#include <video/console.h>
 
 void kmain() {
+    kcon_write("Testing console.\n");
+
     while (1);
     __builtin_unreachable();
 }
