@@ -7,6 +7,7 @@
 #define BOOT_LOG_SERIAL(s)
 #endif
 
+// Internal shit that shouldn't be called directly.
 void _boot_log_serial(char* s);
 
 void _boot_debug_serial_init();
