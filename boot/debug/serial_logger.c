@@ -44,9 +44,9 @@ static void serial_put(const uint8_t port_num, const uint8_t value) {
     outb(base, value);
 }
 
-void serial_init() {
-    uint16_t test_ports[4] = {0x3F8, 0x2F8 , 0x3E8, 0x2E8};
+void _boot_debug_serial_init() {
     for (uint8_t i = 0; i < 4; i++) {
+        const uint16_t test_ports[4] = {0x3F8, 0x2F8 , 0x3E8, 0x2E8};
         ports[i].present = false;
         ports[i].base_port = test_ports[i];
         if (probe_port(test_ports[i])) {
@@ -70,7 +70,7 @@ void serial_write(const uint8_t port_num, const uint8_t* s, uint16_t n) {
         serial_put(port_num, s[i]);
 }
 
-void boot_log_serial(char* s) {
+void _boot_log_serial(char* s) {
     serial_write(0, (uint8_t*) s, strlen(s));
 }
 

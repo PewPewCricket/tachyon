@@ -1,9 +1,16 @@
-#ifdef KDEBUG
 #ifndef BOOT_DEBUG_H
 #define BOOT_DEBUG_H
 
-void serial_init();
-void boot_log_serial(char* s);
+#ifdef KDEBUG
+#define BOOT_LOG_SERIAL(s) _boot_log_serial(s);
+#else
+#define BOOT_LOG_SERIAL(s)
+#endif
+
+void _boot_log_serial(char* s);
+
+void _boot_debug_serial_init();
+char* _boot_debug_itoa(int num, char* str, const int base);
+char* _boot_debug_utoa(unsigned int num, char* str, const int base);
 
 #endif //BOOT_DEBUG_H
-#endif // KDEBUG
