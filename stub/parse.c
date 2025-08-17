@@ -39,5 +39,5 @@ void mb2_parse_tags(const void *tags) {
 		_die();
 	}
 
-	fbprintf("fbprintf test:\n\t%s\t%d\t%u\n", "test_string", -25, 500);
+	fbprintf("fbprintf test:\n\t%s\t%d\t%u\t%x\n", "test_string", -25, 500, 0xdeadbeef);
 }

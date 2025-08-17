@@ -160,6 +160,10 @@ void fbprintf(char *restrict fmt, ...) {
                 const char *str = utoa(va_arg(args, unsigned int), buf, 10);
                 fbputs(str);
                 break;
+            } case 'x': {
+                const char *str = utoa(va_arg(args, unsigned int), buf, 16);
+                fbputs("0x");
+                fbputs(str);
             } default:
                 break;
         }
