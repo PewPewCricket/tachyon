@@ -5,7 +5,9 @@
 #ifndef SCRIO_H
 #define SCRIO_H
 
-void fbwrrite(char *s);
 void fbscroll();
+void fbputc(char c);
+void fbputs(char *s);
+void fbprintf(char *restrict fmt, ...);
 
 #endif //SCRIO_H

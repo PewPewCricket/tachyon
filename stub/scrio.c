@@ -1,6 +1,7 @@
 #include <multiboot2.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <stdarg.h>
 #include "globals.h"
 #include "font.h"
 #include "util.h"
@@ -28,7 +29,7 @@ static inline uint32_t fb_pack_pixel(
            ((b & ((1 << b_size) - 1)) << b_shift);
 }
 
-static void fbputc(const char c, const uint16_t x, const uint16_t y, const uint32_t fg, const uint32_t bg) {
+static void fbset(const char c, const uint16_t x, const uint16_t y, const uint32_t fg, const uint32_t bg) {
     if (!_fb) return;
 
     // Color conversion
@@ -96,38 +97,73 @@ void fbscroll() {
     }
 }
 
-void fbwrrite(char *s) {
-    if (!_fb || !s || *s == '\0') return;
-
+void fbputc(const char c) {
+    if (!_fb) return;
     const uint32_t max_x = _fb->common.framebuffer_width / char_width;
     const uint32_t max_y = _fb->common.framebuffer_height / char_height;
 
-    for (size_t i = 0; s[i] != '\0'; i++) {
-        const char c = s[i];
-
-        switch (c) {
-            case '\n':
-                tty_state.x = 0;
-                tty_state.y++;
-                break;
-            case '\t':
-                tty_state.x = (tty_state.x + 8) & ~7;
-                break;
-            default:
-                fbputc(c, tty_state.x, tty_state.y, tty_state.fg_color, tty_state.bg_color);
-                tty_state.x++;
-        }
-
-        // Handle line wrapping
-        if (tty_state.x >= max_x) {
+    switch (c) {
+        case '\n':
             tty_state.x = 0;
             tty_state.y++;
-        }
-
-        // Handle scrolling if we have written past the screen height
-        if (tty_state.y >= max_y) {
-            fbscroll();
-            tty_state.y = max_y - 1;
-        }
+            break;
+        case '\t':
+            tty_state.x = (tty_state.x + 8) & ~7;
+            break;
+        default:
+            fbset(c, tty_state.x, tty_state.y, tty_state.fg_color, tty_state.bg_color);
+            tty_state.x++;
     }
+
+    // Handle line wrapping
+    if (tty_state.x >= max_x) {
+        tty_state.x = 0;
+        tty_state.y++;
+    }
+
+    // Handle scrolling if we have written past the screen height
+    if (tty_state.y >= max_y) {
+        fbscroll();
+        tty_state.y = max_y - 1;
+    }
+}
+
+void fbputs(const char *s) {
+    if (!_fb || !s || *s == '\0') return;
+    for (size_t i = 0; s[i] != '\0'; i++) {
+        fbputc(s[i]);
+    }
+}
+
+void fbprintf(char *restrict fmt, ...) {
+    if (!_fb || !fmt || *fmt == '\0') return;
+    va_list args; va_start(args, fmt);
+    for (size_t i = 0; fmt[i] != '\0'; i++) {
+        if (fmt[i] != '%') {
+            fbputc(fmt[i]);
+            continue;
+        }
+        const char sp = fmt[i + 1];
+        char buf[64];
+        switch (sp) {
+            case '%': {
+                fbputc('%');
+                break;
+            } case 's': {
+                fbputs(va_arg(args, char*));
+                break;
+            } case 'd': {
+                const char *str = itoa(va_arg(args, int), buf, 10);
+                fbputs(str);
+                break;
+            } case 'u': {
+                const char *str = utoa(va_arg(args, unsigned int), buf, 10);
+                fbputs(str);
+                break;
+            } default:
+                break;
+        }
+        i += 1;
+    }
+    va_end(args);
 }

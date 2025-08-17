@@ -21,7 +21,7 @@ void mb2_parse_tags(const void *tags) {
 				break;
 			case MULTIBOOT_TAG_TYPE_FRAMEBUFFER:
 				_fb = (struct multiboot_tag_framebuffer *)tags;
-				fbwrrite("Got Framebuffer!\n");
+				fbprintf("Got Framebuffer!\n");
 				break;
 			case MULTIBOOT_TAG_TYPE_END:
 				running = false;
@@ -35,7 +35,9 @@ void mb2_parse_tags(const void *tags) {
 	}
 
 	if (_kernel_ptr == nullptr) {
-		fbwrrite("ERROR: could not locate module2 \"kernel64\".\n");
+		fbprintf("ERROR: could not locate module2 \"kernel64\".\n");
 		_die();
 	}
+
+	fbprintf("fbprintf test:\n\t%s\t%d\t%u\n", "test_string", -25, 500);
 }
