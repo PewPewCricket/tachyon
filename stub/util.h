@@ -10,6 +10,7 @@ void* memmove(void* dest, const void* src, const size_t n);
 int strcmp(const char *s1, const char *s2);
 char* itoa(int num, char* str, const int base);
 char* utoa(unsigned int num, char* str, const int base);
+_Noreturn void die();
 
 extern void _die();
 

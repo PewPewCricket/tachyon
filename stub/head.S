@@ -73,7 +73,7 @@ _start:
     push %ebx
     call mb2_parse_tags
 
-    jmp _die
+    call die
 
 .global _die
 .type _die, @function

@@ -1,6 +1,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "globals.h"
+#include "scrio.h"
+#include "util.h"
+
 void* memmove(void* dest, const void* src, const size_t n) {
 	char* d = (char*)dest;
 	const char* s = (const char*)src;
@@ -95,4 +99,9 @@ char* utoa(unsigned int num, char* str, const int base) {
 	str[i] = '\0';
 	reverse(str, i);
 	return str;
+}
+
+_Noreturn void die() {
+	if (_fb != NULL) fbprintf("!!! SYSTEM HALTED !!!\n");
+	_die();
 }
