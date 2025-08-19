@@ -2,9 +2,9 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdarg.h>
-#include "globals.h"
-#include "font.h"
-#include "util.h"
+#include <globals.h>
+#include <font.h>
+#include <string.h>
 
 struct tty_state {
     uint16_t x;
@@ -13,10 +13,24 @@ struct tty_state {
     uint32_t bg_color;
 };
 
+enum format_specifiers {
+    FMT_NONE,
+    FMT_PERCENT,
+    FMT_I32,
+    FMT_U32,
+    FMT_H32,
+    FMT_B32,
+    FMT_I64,
+    FMT_U64,
+    FMT_H64,
+    FMT_B64,
+    FMT_STR
+};
+
 static struct tty_state tty_state = {0, 0, 0xFFFFFFFF, 0x00000000};
 
-const uint32_t char_width = 8;
-const uint32_t char_height = 16;
+constexpr uint32_t char_width = 8;
+constexpr uint32_t char_height = 16;
 
 static inline uint32_t fb_pack_pixel(
     const uint8_t r, const uint8_t g, const uint8_t b,
@@ -70,7 +84,7 @@ static void fbset(const char c, const uint16_t x, const uint16_t y, const uint32
 
     for (uint32_t row = 0; row < char_height; row++) {
         for (uint32_t col = 0; col < char_width; col++) {
-            const char bit = font[c * char_height + row] << col & 0b10000000;
+            const unsigned char bit = font[c * char_height + row] << col & 0b10000000;
             const uint32_t pixel = bit ? fg_pixel : bg_pixel;
             const uint32_t offset = ((x * char_width + col) + ((y * char_height + row) * _fb->common.framebuffer_width)) * bpp;
             for (uint32_t i = 0; i < bpp; i++) {
@@ -85,7 +99,7 @@ void fbscroll() {
 
     const uint32_t bpp = _fb->common.framebuffer_bpp / 8; // bytes per pixel
     const uint32_t row_bytes = _fb->common.framebuffer_width * bpp * char_height;
-    uint8_t* fbptr = (uint8_t*)(uintptr_t)_fb->common.framebuffer_addr;
+    auto fbptr = (uint8_t*)(uintptr_t)_fb->common.framebuffer_addr;
 
     // Move all rows up by one character height
     memmove(fbptr, fbptr + row_bytes, (_fb->common.framebuffer_height - char_height) * row_bytes);
@@ -128,46 +142,94 @@ void fbputc(const char c) {
     }
 }
 
+void fbsetcol(const uint32_t fg_color, const uint32_t bg_color) {
+    tty_state.fg_color = fg_color;
+    tty_state.bg_color = bg_color;
+}
+
 void fbputs(const char *s) {
     if (!_fb || !s || *s == '\0') return;
-    for (size_t i = 0; s[i] != '\0'; i++) {
+    for (size_t i = 0; s[i] != '\0'; i++)
         fbputc(s[i]);
+}
+
+static enum format_specifiers get_specifier(const char *fmt) {
+    if (*fmt != '%') return FMT_NONE;
+    fmt++;
+    switch (*fmt) {
+        case '%': return FMT_PERCENT;
+        case 's': return FMT_STR;
+        case 'd': {
+            if (fmt[1] == 'l') return FMT_I64;
+            return FMT_I32;
+        } case 'u': {
+            if (fmt[1] == 'l') return FMT_U64;
+            return FMT_U32;
+        } case 'x': {
+            if (fmt[1] == 'l') return FMT_H64;
+            return FMT_H32;
+        } case 'b': {
+            if (fmt[1] == 'l') return FMT_B64;
+            return FMT_B32;
+        } default: return FMT_NONE;
+    }
+}
+
+void vfbprintf(char *restrict fmt, const va_list args) {
+    if (!_fb || !fmt || *fmt == '\0') return;
+    char buf[128];
+    for (; *fmt != '\0'; fmt++) {
+        switch (get_specifier(fmt)) {
+            case FMT_NONE: {
+                fbputc(*fmt);
+                break;
+            } case FMT_PERCENT: { fmt += 1;
+                fbputc('%');
+                break;
+            } case FMT_I32: { fmt += 1;
+                const char *str = tostring(va_arg(args, int32_t), buf, 10);
+                fbputs(str);
+                break;
+            } case FMT_I64: { fmt += 2;
+                const char *str = tostring(va_arg(args, int64_t), buf, 10);
+                fbputs(str);
+                break;
+            } case FMT_U32: { fmt += 1;
+                const char *str = tostring(va_arg(args, uint32_t), buf, 10);
+                fbputs(str);
+                break;
+            } case FMT_U64: { fmt += 2;
+                const char *str = tostring(va_arg(args, uint64_t), buf, 10);
+                fbputs(str);
+                break;
+            } case FMT_H32: { fmt += 1;
+                const char *str = tostring(va_arg(args, uint32_t), buf, 16);
+                fbputs(str);
+                break;
+            } case FMT_H64: { fmt += 2;
+                const char *str = tostring(va_arg(args, uint64_t), buf, 16);
+                fbputs(str);
+                break;
+            } case FMT_B32: { fmt += 1;
+                const char *str = tostring(va_arg(args, uint32_t), buf, 2);
+                fbputs(str);
+                break;
+            } case FMT_B64: { fmt += 2;
+                const char *str = tostring(va_arg(args, uint64_t), buf, 2);
+                fbputs(str);
+                break;
+            } case FMT_STR: { fmt += 1;
+                const char *str = va_arg(args, char*);
+                fbputs(str);
+                break;
+            }
+        }
     }
 }
 
 void fbprintf(char *restrict fmt, ...) {
     if (!_fb || !fmt || *fmt == '\0') return;
     va_list args; va_start(args, fmt);
-    for (size_t i = 0; fmt[i] != '\0'; i++) {
-        if (fmt[i] != '%') {
-            fbputc(fmt[i]);
-            continue;
-        }
-        const char sp = fmt[i + 1];
-        char buf[64];
-        switch (sp) {
-            case '%': {
-                fbputc('%');
-                break;
-            } case 's': {
-                fbputs(va_arg(args, char*));
-                break;
-            } case 'd': {
-                const char *str = itoa(va_arg(args, int), buf, 10);
-                fbputs(str);
-                break;
-            } case 'u': {
-                const char *str = utoa(va_arg(args, unsigned int), buf, 10);
-                fbputs(str);
-                break;
-            } case 'x': {
-                const char *str = utoa(va_arg(args, unsigned int), buf, 16);
-                fbputs("0x");
-                fbputs(str);
-            } default:
-                break;
-        }
-        i += 1;
-    }
+    vfbprintf(fmt, args);
     va_end(args);
 }

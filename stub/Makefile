@@ -1,4 +1,5 @@
-CFLAGS += -m32 -Wl,-m,elf_i386
+CFLAGS += -m32  -Wl,-m,elf_i386
+CPPFLAGS += -Iinclude
 TYPE ?= release
 
 release: CFLAGS += -O2
@@ -24,14 +25,14 @@ debug:
 
 $(ELF): $(OBJ) linker.ld Makefile
 	mkdir -p $(dir $@)
-	gcc $(CFLAGS) $(OBJ) -o $@ -T linker.ld
+	$(CC32) $(CFLAGS) $(OBJ) -o $@ -T linker.ld -lgcc
 
 $(BDIR)/stub/obj/$(TYPE)/%.c.o: %.c Makefile
 	mkdir -p $(dir $@)
-	gcc $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	$(CC32) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(BDIR)/stub/obj/$(TYPE)/%.S.o: %.S Makefile
 	mkdir -p $(dir $@)
-	gcc $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	$(CC32) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 -include $(DEPS)

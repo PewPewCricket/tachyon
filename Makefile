@@ -4,22 +4,28 @@ MAKEFLAGS += -rR
 PDIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 BDIR ?= $(PDIR)/build
 
+CROSS_32 := $(PDIR)/cross/i686
+CC32 := $(CROSS_32)/bin/i686-elf-gcc
+
+CROSS_64 := $(PDIR)/cross/amd64
+CC64 :=
+
 CPPFLAGS += -I$(PDIR)/include
 CFLAGS += -std=c23 -Wall -Wextra -ffreestanding \
           -fno-stack-protector -fno-stack-check \
-          -nostdlib -fno-pie -fno-pic -MMD -MP \
-          -static \
+          -nostartfiles -fno-pie -fno-pic -MMD -MP \
+          -nostdlib -static \
           -Wl,--build-id=none,--orphan-handling=warn,-no-pie
 
-export PDIR BDIR CPPFLAGS CFLAGS
+.PHONY: all debug iso install clean clean-all
 
-.PHONY: all debug iso install clean
+export PDIR BDIR CC32 CC64 CFLAGS CPPFLAGS
 
-all: Makefile
+all: Makefile toolchain
 	$(MAKE) -C stub release TYPE=release
 	$(MAKE) -C kernel release TYPE=release
 
-debug: Makefile
+debug: Makefile toolchain
 	$(MAKE) -C stub debug TYPE=debug
 	$(MAKE) -C kernel debug TYPE=debug
 
@@ -29,10 +35,16 @@ iso:
 	cp $(BDIR)/kernel/kernel.elf $(BDIR)/iso/boot/kernel.elf
 	cp stub/grub.cfg $(BDIR)/iso/boot/grub/grub.cfg
 	grub-mkrescue -o $(BDIR)/os.iso $(BDIR)/iso
-	qemu-system-i386 --cdrom $(BDIR)/os.iso -serial stdio
+	qemu-system-x86_64 --cdrom $(BDIR)/os.iso -serial stdio
+
+toolchain:
+	if [ ! -d cross ]; then env -i bash $(PDIR)/toolchain.sh $(PDIR) ; fi
 
 install:
 	@echo "Install target not implemented"
 
 clean:
 	rm -rf $(BDIR)
+
+clean-all:
+	rm -rf $(BDIR) $(PDIR)/cross

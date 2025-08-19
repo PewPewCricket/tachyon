@@ -5,6 +5,9 @@
 #define ASM_FILE 1
 #include <multiboot2.h>
 #include "parse.h"
+.extern boot
+.extern die
+.extern _die
 
 .section .mb2
 .align 8
@@ -73,10 +76,6 @@ _start:
     push %ebx
     call mb2_parse_tags
 
-    call die
+    call boot
 
-.global _die
-.type _die, @function
-_die:
-	hlt
-	jmp _die
+    call die
