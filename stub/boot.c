@@ -18,12 +18,5 @@ void boot() {
 	map_identity();
 	enter_lm();
 
-	fbprintf("Hello compatability mode!\nHello Tachyon!\n");
-	const int t = 5;
-	fbprintf("testing stack vars: %d\n", t);
-	fbprintf("testing stack vars: %d\n", t);
-
-	// Testing stack smash function... (broken as of now?)
-	extern _Noreturn void __stack_chk_fail();
-	__stack_chk_fail();
+	fbprintf("Hello compatability mode!\nHello Tachyon!\n");;
 }
