@@ -1,5 +1,3 @@
-#include "include/memory.h"
-
 #include <scrio.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -7,8 +5,6 @@
 #include <memory.h>
 #include <util.h>
 #include <string.h>
-
-#include "include/scrio.h"
 
 PAGE_ALIGN uint64_t pml4[512];
 PAGE_ALIGN uint64_t pdpt[512];

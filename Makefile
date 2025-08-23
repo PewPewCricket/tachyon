@@ -12,10 +12,10 @@ CC64 := $(CROSS_64)/bin/x86_64-elf-gcc
 
 CPPFLAGS += -I$(PDIR)/include
 CFLAGS += -std=c23 -Wall -Wextra -ffreestanding \
-          -fno-stack-protector -fno-stack-check \
-          -nostartfiles -fno-pie -fno-pic -MMD -MP \
+          -fstack-protector-all \
+          -nostartfiles -MMD -MP \
           -nostdlib -static \
-          -Wl,--build-id=none,--orphan-handling=warn,-no-pie
+          -Wl,--build-id=none,--orphan-handling=warn
 
 .PHONY: all debug iso install clean clean-all toolchain toolchain-offline
 

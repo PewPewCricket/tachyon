@@ -4,6 +4,8 @@
 #include <multiboot2.h>
 #include <stddef.h>
 
+#define STACK_CHK_GUARD 0xe2dee396
+
 extern char __STUB_BASE;
 extern char __STUB_END;
 

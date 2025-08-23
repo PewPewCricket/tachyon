@@ -1,4 +1,4 @@
-CFLAGS += -m32  -Wl,-m,elf_i386
+CFLAGS += -m32  -Wl,-m,elf_i386,-no-pie -fno-pic -fno-pie
 CPPFLAGS += -Iinclude
 TYPE ?= release
 

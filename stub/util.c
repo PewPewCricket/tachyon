@@ -1,6 +1,9 @@
 #include <stdarg.h>
 #include <scrio.h>
 #include <util.h>
+#include <globals.h>
+
+uintptr_t __stack_chk_guard = STACK_CHK_GUARD;
 
 _Noreturn void die() {
 	fbprintf("!!! SYSTEM HALTED !!!\n");
@@ -15,4 +18,8 @@ _Noreturn void error(char *restrict fmt, ...) {
 	vfbprintf(fmt, args);
 	va_end(args);
 	die();
+}
+
+_Noreturn void __stack_chk_fail() {
+	error("Stack smashing detected!\n");
 }
