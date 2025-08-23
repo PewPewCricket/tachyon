@@ -21,15 +21,14 @@ void mb2_parse_tags(void *tags) {
 				_fb = (struct multiboot_tag_framebuffer*)tags;
 				fbprintf("Got Framebuffer!\n");
 				break;
-			case MULTIBOOT_TAG_TYPE_END:
-				running = false;
-				break;
+			case MULTIBOOT_TAG_TYPE_END: running = false;
 			default: break;
 		}
 		// Align to 8-byte boundary
 		tags += (tag_size + 7) & ~7;
 	}
 
+	// Get kernel location in memory.
 	fbprintf("Getting boot tags:\n");
 	tags = tags_begin;
 	tags += 8;
@@ -47,9 +46,8 @@ void mb2_parse_tags(void *tags) {
 					_kernel_size = tag->mod_end - tag->mod_start;
 				}
 				break;
-			} case MULTIBOOT_TAG_TYPE_END:
-				running = false;
-				break;
+			}
+			case MULTIBOOT_TAG_TYPE_END: running = false;
 			default: break;
 		}
 

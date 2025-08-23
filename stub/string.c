@@ -78,7 +78,7 @@ char* strtoll(int64_t num, char *buf, const int base) {
     if (num == 0) {
         buf[i++] = '0';
         buf[i] = '\0';
-        return NULL;
+        return buf;
     }
 
     while (num != 0) {
@@ -102,7 +102,7 @@ char* strtoull(uint64_t num, char *buf, const int base) {
     if (num == 0) {
         buf[i++] = '0';
         buf[i] = '\0';
-        return NULL;
+        return buf;
     }
 
     while (num != 0) {

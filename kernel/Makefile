@@ -1,4 +1,4 @@
-CFLAGS += -m64 -Wl,-m,elf_x86_64
+CFLAGS += -m64 -Wl,-m,elf_x86_64 -fPIC -fPIE
 TYPE ?= release
 
 release: CFLAGS += -O2
@@ -24,14 +24,14 @@ debug:
 
 $(ELF): $(OBJ) linker.ld Makefile
 	mkdir -p $(dir $@)
-	gcc $(CFLAGS) $(OBJ) -o $@ -T linker.ld
+	$(CC64) $(CFLAGS) $(OBJ) -o $@ -T linker.ld -lgcc
 
 $(BDIR)/kernel/obj/$(TYPE)/%.c.o: %.c Makefile
 	mkdir -p $(dir $@)
-	gcc $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	$(CC64) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(BDIR)/kernel/obj/$(TYPE)/%.S.o: %.S Makefile
 	mkdir -p $(dir $@)
-	gcc $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	$(CC64) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 -include $(DEPS)

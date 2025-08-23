@@ -8,7 +8,7 @@ CROSS_32 := $(PDIR)/cross/i686
 CC32 := $(CROSS_32)/bin/i686-elf-gcc
 
 CROSS_64 := $(PDIR)/cross/amd64
-CC64 :=
+CC64 := $(CROSS_64)/bin/x86_64-elf-gcc
 
 CPPFLAGS += -I$(PDIR)/include
 CFLAGS += -std=c23 -Wall -Wextra -ffreestanding \
@@ -17,7 +17,7 @@ CFLAGS += -std=c23 -Wall -Wextra -ffreestanding \
           -nostdlib -static \
           -Wl,--build-id=none,--orphan-handling=warn,-no-pie
 
-.PHONY: all debug iso install clean clean-all
+.PHONY: all debug iso install clean clean-all toolchain toolchain-offline
 
 export PDIR BDIR CC32 CC64 CFLAGS CPPFLAGS
 
@@ -38,7 +38,10 @@ iso:
 	qemu-system-x86_64 --cdrom $(BDIR)/os.iso -serial stdio
 
 toolchain:
-	if [ ! -d cross ]; then env -i bash $(PDIR)/toolchain.sh $(PDIR) ; fi
+	if [ ! -d cross ]; then env -i PATH=/usr/bin:/bin bash $(PDIR)/toolchain.sh $(PDIR) ; fi
+
+toolchain-offline:
+	env -i PATH=/usr/bin:/bin bash $(PDIR)/toolchain.sh $(PDIR) offline
 
 install:
 	@echo "Install target not implemented"

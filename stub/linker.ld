@@ -39,8 +39,4 @@ SECTIONS {
     }
 
     __STUB_END = .;
-
-    /DISCARD/ : {
-        *(*)
-    }
 }
