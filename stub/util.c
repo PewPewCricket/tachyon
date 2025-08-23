@@ -21,6 +21,6 @@ _Noreturn void error(char *restrict fmt, ...) {
 }
 
 _Noreturn void __stack_chk_fail() {
-	const uintptr_t caller = (uintptr_t) __builtin_return_address(1);
+	const uintptr_t caller = (uintptr_t) __builtin_extract_return_addr(__builtin_return_address(1));
 	error("Stack smashing detected in function: 0x%xl!\n", caller);
 }
