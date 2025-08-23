@@ -12,7 +12,7 @@ CC64 := $(CROSS_64)/bin/x86_64-elf-gcc
 
 CPPFLAGS += -I$(PDIR)/include
 CFLAGS += -std=c23 -Wall -Wextra -ffreestanding \
-          -fstack-protector-all \
+          -fstack-protector-all -mabi=sysv \
           -nostartfiles -MMD -MP \
           -nostdlib -static \
           -Wl,--build-id=none,--orphan-handling=warn
