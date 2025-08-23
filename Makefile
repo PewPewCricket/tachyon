@@ -38,7 +38,7 @@ iso:
 	qemu-system-x86_64 --cdrom $(BDIR)/os.iso -serial stdio
 
 toolchain:
-	if [ ! -d cross ]; then env -i PATH=/usr/bin:/bin bash $(PDIR)/toolchain.sh $(PDIR) ; fi
+	if [ ! -d cross ]; then env -i PATH=/usr/bin:/bin bash $(PDIR)/toolchain.sh $(PDIR) online; fi
 
 toolchain-offline:
 	env -i PATH=/usr/bin:/bin bash $(PDIR)/toolchain.sh $(PDIR) offline
