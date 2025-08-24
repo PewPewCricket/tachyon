@@ -36,17 +36,20 @@ void boot() {
 	map_identity();
 	enter_lm();
 
-	auto const kernel_elf = (Elf64_Ehdr*) _kernel_ptr;
-	auto const kernel_elf_entry = (uint64_t) kernel_elf->e_entry;
+	auto eh = (Elf64_Ehdr*)_kernel_ptr;
+	uint64_t e = eh->e_entry;
 	auto kernel_start = NULL;
-	for (int i = 0; i < kernel_elf->e_phnum; i++) {
-		auto const phdr = (Elf64_Phdr*) (kernel_elf->e_phoff + _kernel_ptr) + (kernel_elf->e_phentsize * i);
-		if (phdr->p_type != PT_LOAD) continue;
-		if (phdr->p_vaddr == kernel_elf_entry)
-			kernel_start = (void*) (phdr->p_offset + _kernel_ptr);
+	for (int i = 0; i < eh->e_phnum; i++) {
+		auto ph = (Elf64_Phdr *)((uint8_t*)_kernel_ptr + eh->e_phoff + i * eh->e_phentsize);
+		if (ph->p_type != PT_LOAD) continue;
+		if (e >= ph->p_vaddr && e < ph->p_vaddr + ph->p_memsz) {
+			uint64_t entry_file_off = ph->p_offset + (e - ph->p_vaddr);
+			kernel_start = (void *)((uint8_t*)_kernel_ptr + entry_file_off);
+			break;
+		}
 	}
-	if (kernel_start == NULL) error("Kernel entry point could not be found!");
-	fbprintf("Found kernel entry point at: 0x%x.\n", kernel_start);
+	if (!kernel_start) error("Kernel entry point could not be found!\n");
+	fbprintf("Found kernel entry point at: 0x%p.\n", kernel_start);
 
 	struct gdtr gdtr;
 	gdtr.size = sizeof(uint64_t) * 3;

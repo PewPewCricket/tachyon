@@ -25,7 +25,7 @@ void map_identity() {
 			addr = pdpt_base + (uint64_t)j * 0x200000UL;
 			pd[i][j] = mkpte(addr, PTE_PRESENT | PTE_WRITABLE| PTE_SIZE);
 		}
-		fbprintf("\t[%xl - %xl]: identity mapped.\n", pdpt_base, addr + 0x200000 - 1);
+		fbprintf("\t[0x%xl - 0x%xl]: identity mapped.\n", pdpt_base, addr + 0x200000 - 1);
 	}
 }
 

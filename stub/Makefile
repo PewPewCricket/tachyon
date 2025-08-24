@@ -3,7 +3,7 @@ CPPFLAGS += -Iinclude
 TYPE ?= release
 
 release: CFLAGS += -O2
-debug: CFLAGS += -O0 -g
+debug: CFLAGS += -Og -g
 
 SRCFILES := $(shell find -L * -type f | LC_ALL=C sort)
 CFILES := $(filter %.c,$(SRCFILES))

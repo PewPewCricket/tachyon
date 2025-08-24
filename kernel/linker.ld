@@ -8,7 +8,7 @@ PHDRS {
 
 SECTIONS {
     . = 0xffff800000000000;
-    __KERNEL_BASE = .;
+    __kernel_base = .;
 
     .text : {
         *(.text*)
@@ -18,6 +18,12 @@ SECTIONS {
 
     .rodata : {
         *(.rodata*)
+    } : rodata
+
+    .rela.dyn : {
+        __reloc_start = .;
+        *(.rela.dyn)
+        __reloc_end = .;
     } : rodata
 
     . = ALIGN(CONSTANT(MAXPAGESIZE));
@@ -31,7 +37,7 @@ SECTIONS {
         *(COMMON)
     }
 
-    __KERNEL_END = .;
+    __kernel_end = .;
 
     /DISCARD/ : {
 
