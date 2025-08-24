@@ -17,6 +17,8 @@ _start:
     movq $0x0, %rbp
     movl %ebx, _mb2_data_ptr(%rip)
     call patch_relocs
+    /* ... */
+    jmp _die
 
 .global _die
 .type _die, @function

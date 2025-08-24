@@ -49,7 +49,7 @@ void boot() {
 		}
 	}
 	if (!kernel_start) error("Kernel entry point could not be found!\n");
-	fbprintf("Found kernel entry point at: 0x%p.\n", kernel_start);
+	fbprintf("Found kernel entry point at: 0x%x.\n", kernel_start);
 
 	struct gdtr gdtr;
 	gdtr.size = sizeof(uint64_t) * 3;
