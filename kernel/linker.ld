@@ -7,7 +7,7 @@ PHDRS {
 }
 
 SECTIONS {
-    . = 0;
+    . = 0xffff800000000000;
     __KERNEL_BASE = .;
 
     .text : {
@@ -34,6 +34,6 @@ SECTIONS {
     __KERNEL_END = .;
 
     /DISCARD/ : {
-        *(*)
+
     }
 }
