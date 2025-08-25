@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CLionExternalBuildManager">
-    <target id="5695a4b2-366d-4cb9-ac04-6832e766bec2" name="all" defaultType="MAKE">
-      <configuration id="9324a3e9-8e5b-466c-ade7-1e2e43fd6891" name="all">
-        <build type="MAKE">
-          <make targetName="all" />
+    <target id="a3f02e04-6f87-413b-a095-1df066a53e01" name="kernel" defaultType="TOOL">
+      <configuration id="a5709893-da8e-4687-a673-e37c72ed2d36" name="kernel">
+        <build type="TOOL">
+          <tool actionId="Tool_External Tools_make all" />
         </build>
-        <clean type="MAKE">
-          <make targetName="clean" />
-        </clean>
       </configuration>
     </target>
   </component>
