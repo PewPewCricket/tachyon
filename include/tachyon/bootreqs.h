@@ -1,0 +1,13 @@
+#pragma once
+#include <limine/limine.h>
+
+extern volatile struct limine_bootloader_info_request limine_bootloader_info_request;
+extern volatile struct limine_executable_cmdline_request limine_executable_cmdline_request;
+extern volatile struct limine_framebuffer_request limine_framebuffer_request;
+extern volatile struct limine_hhdm_request limine_hhdm_request;
+extern volatile struct limine_paging_mode_request limine_paging_mode_request;
+extern volatile struct limine_rsdp_request limine_rsdp_request;
+extern volatile struct limine_smbios_request limine_smbios_request;
+extern volatile struct limine_efi_system_table_request limine_efi_system_table_request;
+extern volatile struct limine_efi_memmap_request limine_efi_memmap_request;
+extern volatile struct limine_date_at_boot_request limine_date_at_boot_request;
