@@ -19,8 +19,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a31318e7-e4c5-418e-9a2b-74205e1ea92c" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/include/tachyon/memory.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/tachyon/panic.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mm/init.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/compile_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/tachyon/phys_mem.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/tachyon/phys_mem.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/boot/boot.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/boot/boot.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -121,7 +125,7 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration name="kernel" type="CLionExternalRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-cdrom ./build/image.iso -d int -serial stdio" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" WORKING_DIR="file://$ProjectFileDir$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="tachyon" TARGET_NAME="kernel" CONFIG_NAME="kernel" RUN_PATH="/bin/qemu-system-x86_64">
+    <configuration name="kernel" type="CLionExternalRunConfiguration" factoryName="Application" PROGRAM_PARAMS="-cdrom ./build/image.iso -serial stdio -M accel=tcg,smm=off -d int -no-reboot -no-shutdown" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" WORKING_DIR="file://$ProjectFileDir$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="tachyon" TARGET_NAME="kernel" CONFIG_NAME="kernel" RUN_PATH="/bin/qemu-system-x86_64">
       <method v="2">
         <option name="CLION.EXTERNAL.BUILD" enabled="true" />
         <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_iso.sh" />
@@ -141,7 +145,7 @@
       <option name="presentableId" value="Default" />
       <updated>1756158945293</updated>
       <workItem from="1756158946320" duration="10299000" />
-      <workItem from="1756242802036" duration="18018000" />
+      <workItem from="1756242802036" duration="29320000" />
     </task>
     <servers />
   </component>

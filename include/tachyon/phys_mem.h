@@ -1,30 +1,47 @@
 #pragma once
 #include <stdint.h>
 
+#define MAX_ZONE_REGIONS 256
+
 enum page_flags {
-	PG_NONE			= 0,
 	PG_RESERVED		= 1 << 0,
 	PG_DIRTY		= 1 << 1,
 	PG_LOCKED		= 1 << 2,
 };
 
-enum zone_type {
-	ZONE_DMA,
-	ZONE_DMA32,
-	ZONE_NORMAL,
+enum mem_type {
+	MEM_DMA,
+	MEM_DMA32,
+	MEM_NORMAL,
+	MEM_DEVICE,
 };
 
 struct page {
 	enum page_flags flags;
 	uint64_t pfn;
 	uint16_t refcount;
+	uint8_t order;
+};
+
+struct buddy_freelist {
+	struct freelist *next;
+	struct freelist *last;
+	struct page *page;
+};
+
+struct region {
+	enum mem_type type;
+	uint64_t length;
+	struct page *map;
+	struct buddy_freelist *freelist;
 };
 
 struct zone {
-	enum zone_type type;
-	uint64_t zone_start_pfn;
-	uint64_t spanned_pages;
-	uint64_t present_pages;
+	enum mem_type type;
+	uint64_t region_count;
+	struct region *regions[MAX_ZONE_REGIONS];
 };
 
-struct page *mem_map;
+#ifndef PMEM_H_NO_MEM_MAP
+extern struct page *mem_map;
+#endif
