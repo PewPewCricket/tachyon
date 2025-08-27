@@ -7,6 +7,11 @@ static volatile __limine_request struct limine_stack_size_request limine_stack_s
 	.stack_size = 32768,
 };
 
+volatile __limine_request struct limine_memmap_request limine_memmap_request = {
+	.id = LIMINE_MEMMAP_REQUEST,
+	.revision = 3,
+};
+
 volatile __limine_request struct limine_bootloader_info_request limine_bootloader_info_request = {
 	.id = LIMINE_BOOTLOADER_INFO_REQUEST,
 	.revision = 0,

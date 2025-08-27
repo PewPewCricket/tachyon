@@ -41,3 +41,66 @@ int memcmp(const void *s1, const void *s2, size_t n) {
 
 	return 0;
 }
+
+static void reverse(char *str, const int length) {
+	int start = 0;
+	int end = length - 1;
+	while (start < end) {
+		const char x = str[start];
+		str[start] = str[end];
+		str[end] = x;
+		start++;
+		end--;
+	}
+}
+
+char* strtoll(int64_t num, char *buf, const int base) {
+	int i = 0;
+	int is_negative = 0;
+
+	// Negative numbers are not handled for other bases.
+	if (num < 0 && base == 10) {
+		is_negative = 1;
+		num = -num;
+	}
+
+	if (num == 0) {
+		buf[i++] = '0';
+		buf[i] = '\0';
+		return buf;
+	}
+
+	while (num != 0) {
+		const int rem = num % base;
+		buf[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
+		num = num / base;
+	}
+
+	if (is_negative) {
+		buf[i++] = '-';
+	}
+
+	buf[i] = '\0';
+	reverse(buf, i);
+	return buf;
+}
+
+char* strtoull(uint64_t num, char *buf, const int base) {
+	int i = 0;
+
+	if (num == 0) {
+		buf[i++] = '0';
+		buf[i] = '\0';
+		return buf;
+	}
+
+	while (num != 0) {
+		const int rem = num % base;
+		buf[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
+		num = num / base;
+	}
+
+	buf[i] = '\0';
+	reverse(buf, i);
+	return buf;
+}

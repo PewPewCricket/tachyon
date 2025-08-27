@@ -1,6 +1,7 @@
 #pragma once
 #include <limine/limine.h>
 
+extern volatile struct limine_memmap_request limine_memmap_request;
 extern volatile struct limine_bootloader_info_request limine_bootloader_info_request;
 extern volatile struct limine_executable_cmdline_request limine_executable_cmdline_request;
 extern volatile struct limine_framebuffer_request limine_framebuffer_request;
