@@ -55,7 +55,7 @@ void mk_mem_map() {
     }
 
     printk(KERN_EMERG, "total memory: %llu bytes\n", mem_total);
-    printk(KERN_DEBUG, "searchng for usable region of %llu bytes\n", mem_total / 4096 * sizeof(struct page));
+    printk(KERN_DEBUG, "searching for usable region of %llu bytes\n", mem_total / 4096 * sizeof(struct page));
 
     for (uint64_t i = 0; i < limine_memmap->entry_count; i++) {
         const uint64_t base = limine_memmap->entries[i]->base;
