@@ -24,8 +24,8 @@ struct page {
 };
 
 struct buddy_freelist {
-	struct freelist *next;
-	struct freelist *last;
+	struct buddy_freelist *next;
+	struct buddy_freelist *last;
 	struct page *page;
 };
 

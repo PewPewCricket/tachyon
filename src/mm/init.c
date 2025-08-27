@@ -1,11 +1,12 @@
+#define PMEM_H_NO_MEM_MAP 1
 #include <limine/limine.h>
 #include <tachyon/bootreqs.h>
 #include <tachyon/printk.h>
-#define PMEM_H_NO_MEM_MAP 1
 #include <tachyon/phys_mem.h>
 #include <tachyon/panic.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 struct page *mem_map;
 struct region *mem_regions;
@@ -50,6 +51,7 @@ static void _mm_init_data(struct page *mem_map, struct region *mem_regions, stru
         const uint64_t length = limine_memmap->entries[i]->length;
         const uint64_t pages = (length + 4096 - 1) / 4096;
         const uint64_t type = limine_memmap->entries[i]->type;
+        struct buddy_freelist *last_node = NULL;
 
         // Logging
         if (type == LIMINE_MEMMAP_USABLE) {
@@ -78,8 +80,18 @@ static void _mm_init_data(struct page *mem_map, struct region *mem_regions, stru
                     mem_map[page_iter].refcount = 0;
                     if (mem_map[page_iter].pfn >= mm_data_first_pfn && mem_map[page_iter].pfn < mm_data_last_pfn)
                         mem_map[page_iter].flags = PG_RESERVED;
+                    else {
+                        struct buddy_freelist *freelist_node = (struct buddy_freelist *)((mem_map[page_iter].pfn << 12) + hhdm_offset);
+                        freelist_node->last = last_node;
+                        freelist_node->next = NULL;
+                        if (last_node)
+                            last_node->next = freelist_node;
+                        last_node = freelist_node;
+                    }
+
                 } else if (type == LIMINE_MEMMAP_ACPI_RECLAIMABLE || type == LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE) {
                     mem_map[page_iter].refcount = 1;
+
                 } else { // device / framebuffer / NVS
                     mem_map[page_iter].refcount = 0;
                     mem_map[page_iter].flags = PG_RESERVED;
@@ -107,7 +119,7 @@ void init_mm() {
     const uint64_t mem_zones_size   = 4 * sizeof(struct zone); // 4 possible types of zones
     const uint64_t mm_data_size = mem_map_size + mem_regions_size + mem_zones_size;
 
-    // Allocate space for memory metadata (who needs a boottime allocator!)
+    // Allocate space for memory metadata (who needs a boot-time allocator!)
     printk(KERN_DEBUG, "mm: searching for usable region of %llu bytes\n", total_pages * sizeof(struct page));
 
     for (uint64_t i = 0; i < limine_memmap->entry_count; i++) {
