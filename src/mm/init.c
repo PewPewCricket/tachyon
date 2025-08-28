@@ -88,8 +88,11 @@ static void _mm_init_region_freelist(struct region *region, const uintptr_t hhdm
             continue;
         }
 
-        is_parsing_block = true;
-        printk(KERN_DEBUG, "%llu reserved pages\n", pg_iter - 1);
+        if (pg_iter) {
+            is_parsing_block = true;
+            printk(KERN_DEBUG, "%llu reserved pages\n", pg_iter - 1);
+        }
+
         break;
     }
 }
