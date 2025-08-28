@@ -39,8 +39,7 @@ static uint64_t _get_total_pages(uint64_t *region_count) {
 void mm_print_region_freelist(const struct region *region, const uint64_t hhdm_offset) {
     const struct buddy_freelist *node = region->freelist_head;
     if (node)
-        printk(KERN_DEBUG, "mm: freelist for region %p for %llu pages:\n",
-           region->map->pfn * PAGE_SIZE, region->length);
+        printk(KERN_DEBUG, "mm: freelist for region %p for %llu pages:\n", region->map->pfn * PAGE_SIZE, region->length);
 
     while (node) {
         const uintptr_t pfn = node->page->pfn;
@@ -129,10 +128,12 @@ static void _mm_init_data(struct page *mem_map, struct region *mem_regions, stru
             type == LIMINE_MEMMAP_ACPI_RECLAIMABLE ||
             type == LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE ||
             type == LIMINE_MEMMAP_ACPI_NVS ||
-            type == LIMINE_MEMMAP_FRAMEBUFFER) {
+            type == LIMINE_MEMMAP_FRAMEBUFFER)
+        {
             mem_regions[region_idx].map = mem_map + page_iter;
             mem_regions[region_idx].length = pages;
-            mem_regions[region_idx].type = (type == LIMINE_MEMMAP_USABLE || type == LIMINE_MEMMAP_ACPI_RECLAIMABLE || type == LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE) ? MEM_NORMAL : MEM_DEVICE;
+            mem_regions[region_idx].type = (type == LIMINE_MEMMAP_USABLE || type == LIMINE_MEMMAP_ACPI_RECLAIMABLE ||
+                type == LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE) ? MEM_NORMAL : MEM_DEVICE;
 
             // fill the mem map entries of current region
             for (uint64_t j = 0; j < pages && page_iter < total_pages; j++, page_iter++) {
@@ -210,9 +211,13 @@ void init_mm() {
             mem_regions[i].map[mem_regions[i].length - 1].pfn * PAGE_SIZE + 4095,
             mem_regions[i].length
         );
-        if (mem_regions[i].type == MEM_NORMAL)      printk(KERN_DEBUG, "(memory)\n");
-        else if (mem_regions[i].type == MEM_DEVICE) printk(KERN_DEBUG, "(device)\n");
-        else                                        printk(KERN_DEBUG, "(unknown)\n");
+
+        if (mem_regions[i].type == MEM_NORMAL)
+            printk(KERN_DEBUG, "(memory)\n");
+        else if (mem_regions[i].type == MEM_DEVICE)
+            printk(KERN_DEBUG, "(device)\n");
+        else
+            printk(KERN_DEBUG, "(unknown)\n");
 
         mm_print_region_freelist(&mem_regions[i], hhdm_offset);
     }
