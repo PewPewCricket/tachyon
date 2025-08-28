@@ -15,7 +15,7 @@ static RINGBUF_STATIC(printk_ringbuf, PRINTK_MAX_CHARS, char);
 void printk(const enum  printk_log_level level, const char *fmt, ...) {
     if (level > loglevel) return;
 
-    char buf[64];
+    char buf[256];
     const char *p = fmt;
     va_list args;
     va_start(args, fmt);

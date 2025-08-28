@@ -43,7 +43,10 @@ void fbcom_scroll() {
     char *fbptr = (char*) _fb->address;
 
     // Move all rows up by one character height
-    memmove(fbptr, fbptr + row_bytes, (_fb->height - char_height) * row_bytes);
+    memmove(fbptr,
+        fbptr + row_bytes,
+        (_fb->height - char_height) * _fb->width * bpp);
+
 
     // Clear the last character row
     const uint32_t start = (_fb->height - char_height) * _fb->width * bpp;

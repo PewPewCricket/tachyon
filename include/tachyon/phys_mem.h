@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <stddef.h>
 
 #define MAX_ZONE_REGIONS 256
 
@@ -20,12 +21,12 @@ struct page {
 	enum page_flags flags;
 	uint64_t pfn;
 	uint16_t refcount;
-	uint8_t order;
+	signed int order;
 };
 
 struct buddy_freelist {
 	struct buddy_freelist *next;
-	struct buddy_freelist *last;
+	struct buddy_freelist *prev;
 	struct page *page;
 };
 
@@ -33,7 +34,8 @@ struct region {
 	enum mem_type type;
 	uint64_t length;
 	struct page *map;
-	struct buddy_freelist *freelist;
+	struct buddy_freelist *freelist_head;
+	struct buddy_freelist *freelist_tail;
 };
 
 struct zone {
