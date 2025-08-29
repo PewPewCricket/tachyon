@@ -32,7 +32,6 @@ void boot(void) {
     fbcon_setfb(framebuffer);
     printk(KERN_INFO, "Tachyon X.X.X\n");
 
-
     init_mm();
 
     hcf();

@@ -12,3 +12,4 @@ extern volatile struct limine_smbios_request limine_smbios_request;
 extern volatile struct limine_efi_system_table_request limine_efi_system_table_request;
 extern volatile struct limine_efi_memmap_request limine_efi_memmap_request;
 extern volatile struct limine_date_at_boot_request limine_date_at_boot_request;
+extern volatile struct limine_executable_address_request limine_executable_address_request;
