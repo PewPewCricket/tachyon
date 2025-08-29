@@ -52,9 +52,9 @@ void mm_print_region_freelist(const struct region *region, const uint64_t hhdm_o
     }
 }
 
-static void mm_add_region_freelist(struct region *region, const signed int order, struct page *pg, const uint64_t hhdm_offset) {
-    const uintptr_t node_addr = (pg->pfn << PAGE_SHIFT) + hhdm_offset;
-    struct buddy_freelist *node = (struct buddy_freelist *)node_addr;
+static void mm_append_region_freelist(struct region *region, const signed int order, struct page *pg, const uint64_t hhdm_offset) {
+    const uintptr_t node_addr = pg->pfn * PAGE_SIZE + hhdm_offset;
+    struct buddy_freelist *node = (struct buddy_freelist*) node_addr;
 
     node->page = pg;
     node->next = NULL;
@@ -63,7 +63,7 @@ static void mm_add_region_freelist(struct region *region, const signed int order
     // first page in block is set ot its order, pages inside the block are set to -1
     pg->order = order;
     const size_t idx = pg - region->map;
-    for (size_t i = 1; i < (1UL << order); i++) {
+    for (size_t i = 1; i <= (1UL << order); i++) {
         region->map[idx + i].order = -1;
     }
 
@@ -75,22 +75,27 @@ static void mm_add_region_freelist(struct region *region, const signed int order
     region->freelist_tail = node;
 }
 
-// implement later (ugghh)
-static void _mm_init_region_freelist(struct region *region, const uintptr_t hhdm_offset) {
-    uint64_t pg_iter = 0;
-    uint64_t reserved_pages = 0;
-    bool is_parsing_block = false;
-    while (pg_iter < region->length) {
-        struct page *pg = &region->map[pg_iter];
+static void _mm_init_region_freelist(struct region *region, const uint64_t hhdm_offset) {
+    uint64_t page_idx = 0;
+    uint64_t pages_remaining = region->length;
 
-        if (pg->flags & PG_RESERVED && !is_parsing_block) {
-            reserved_pages++;
-        }
-        pg_iter++;
+    while (pages_remaining > 0) {
+        // largest block that fits
+        int order = 63 - __builtin_clzll(pages_remaining);
+        // page_idx must be divisible by block size
+        while (page_idx & ((1ULL << order) - 1))
+            order--;
+        const uint64_t block_size = 1ULL << order;
+        printk(KERN_DEBUG, "page %llu: blk_size: %llu order: %llu\n", page_idx + region->map->pfn, block_size, order);
+
+        mm_append_region_freelist(region, order, &region->map[page_idx], hhdm_offset);
+
+        // move to next block
+        page_idx += block_size;
+        pages_remaining -= block_size;
     }
-    if (reserved_pages)
-        printk(KERN_DEBUG, "%llu reserved pages\n", reserved_pages);
 }
+
 
 static void _mm_init_data(struct page *mem_map, struct region *mem_regions, struct zone *mem_zones,
                              const uint64_t mm_data_size, const uint64_t total_pages)
@@ -108,7 +113,6 @@ static void _mm_init_data(struct page *mem_map, struct region *mem_regions, stru
         const uint64_t length   = limine_memmap->entries[i]->length;
         const uint64_t pages    = ALIGN_UP_TO_PFN(length);
         const uint64_t type     = limine_memmap->entries[i]->type;
-        struct buddy_freelist *last_node = NULL;
 
         // Logging
         if (type == LIMINE_MEMMAP_USABLE) {
@@ -126,6 +130,8 @@ static void _mm_init_data(struct page *mem_map, struct region *mem_regions, stru
             type == LIMINE_MEMMAP_ACPI_NVS ||
             type == LIMINE_MEMMAP_FRAMEBUFFER)
         {
+            mem_regions[region_idx].freelist_head = NULL;
+            mem_regions[region_idx].freelist_tail = NULL;
             mem_regions[region_idx].map = mem_map + page_iter;
             mem_regions[region_idx].length = pages;
             mem_regions[region_idx].type = (type == LIMINE_MEMMAP_USABLE || type == LIMINE_MEMMAP_ACPI_RECLAIMABLE ||
@@ -139,8 +145,12 @@ static void _mm_init_data(struct page *mem_map, struct region *mem_regions, stru
 
                 if (type == LIMINE_MEMMAP_USABLE) {
                     // This might reserve 1 extra page, but im too scared to change this so it's staying as it is!
-                    if (mem_map[page_iter].pfn >= mm_data_first_pfn && mem_map[page_iter].pfn <= mm_data_last_pfn)
+                    if (mem_map[page_iter].pfn >= mm_data_first_pfn && mem_map[page_iter].pfn <= mm_data_last_pfn) {
                         mem_map[page_iter].flags = PG_RESERVED;
+                        // It's easier to pretend the pages just don't exist.
+                        mem_regions[region_idx].map++;
+                        mem_regions[region_idx].length--;
+                    }
 
                 } else if (type == LIMINE_MEMMAP_ACPI_RECLAIMABLE || type == LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE) {
                     mem_map[page_iter].refcount = 1;
