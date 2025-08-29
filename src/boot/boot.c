@@ -4,10 +4,12 @@
 #include <lib/string.h>
 #include <limine/limine.h>
 #include <limine/types.h>
-#include <tachyon/bootreqs.h>
+#include <limine/requests.h>
 #include <drivers/fbcon.h>
 #include <tachyon/printk.h>
 #include <tachyon/memory.h>
+#include <tachyon/pmm/pmem.h>
+#include <limine/requests.h>
 
 static volatile __limine_requests_start LIMINE_REQUESTS_START_MARKER;
 static volatile __limine_requests_end LIMINE_REQUESTS_END_MARKER;
@@ -28,11 +30,13 @@ void boot(void) {
         hcf();
     }
 
+    mem_hhdm_offset = limine_hhdm_request.response->offset;
+
     const struct limine_framebuffer *framebuffer = limine_framebuffer_request.response->framebuffers[0];
     fbcon_setfb(framebuffer);
     printk(KERN_INFO, "Tachyon X.X.X\n");
 
-    init_mm();
+    mm_init();
 
     hcf();
 }

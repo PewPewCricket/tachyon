@@ -69,3 +69,5 @@ volatile __limine_request struct limine_date_at_boot_request limine_date_at_boot
 	.id = LIMINE_DATE_AT_BOOT_REQUEST,
 	.revision = 0,
 };
+
+volatile uintptr_t mem_hhdm_offset;

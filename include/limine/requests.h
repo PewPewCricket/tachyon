@@ -1,5 +1,6 @@
 #pragma once
 #include <limine/limine.h>
+#include <stdint.h>
 
 extern volatile struct limine_memmap_request limine_memmap_request;
 extern volatile struct limine_bootloader_info_request limine_bootloader_info_request;
@@ -13,3 +14,5 @@ extern volatile struct limine_efi_system_table_request limine_efi_system_table_r
 extern volatile struct limine_efi_memmap_request limine_efi_memmap_request;
 extern volatile struct limine_date_at_boot_request limine_date_at_boot_request;
 extern volatile struct limine_executable_address_request limine_executable_address_request;
+
+extern uintptr_t mem_hhdm_offset;

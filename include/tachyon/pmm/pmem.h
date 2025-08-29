@@ -2,19 +2,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define MAX_ZONE_REGIONS 256
-
 enum page_flags {
 	PG_RESERVED		= 1 << 0,
 	PG_DIRTY		= 1 << 1,
 	PG_LOCKED		= 1 << 2,
-};
-
-enum mem_type {
-	MEM_DMA,
-	MEM_DMA32,
-	MEM_NORMAL,
-	MEM_DEVICE,
 };
 
 struct page {
@@ -31,19 +22,17 @@ struct buddy_freelist {
 };
 
 struct region {
-	enum mem_type type;
 	uint64_t length;
 	struct page *map;
 	struct buddy_freelist *freelist_head;
 	struct buddy_freelist *freelist_tail;
 };
 
-struct zone {
-	enum mem_type type;
-	uint64_t region_count;
-	struct region *regions[MAX_ZONE_REGIONS];
-};
+extern struct page *pmm_map;
+extern struct region *pmm_regions;
 
-#ifndef PMEM_H_NO_MEM_MAP
-extern struct page *mem_map;
-#endif
+void pmm_init();
+uint64_t pmm_get_total_pages(uint64_t *region_count);
+void pmm_print_freelist(const struct region *region);
+void pmm_freelist_append_node(struct region *region, const signed int order, struct page *pg);
+void pmm_freelist_remove_node(struct region *region, const struct buddy_freelist *node);
