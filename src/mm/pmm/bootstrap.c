@@ -8,6 +8,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "tachyon/pmm/buddy.h"
+
 struct page *pmm_map;
 struct region *pmm_regions;
 
@@ -145,8 +147,11 @@ void pmm_init() {
 
         if (pmm_regions[i].map->flags == PG_RESERVED)
             printk(KERN_DEBUG, "(reclaimable)\n");
-        else
+        else {
             printk(KERN_DEBUG, "(memory)\n");
+
+            pmm_buddy_split_block(&pmm_regions[i], pmm_regions[i].freelist_tail);
+        }
 
         pmm_print_freelist(&pmm_regions[i]);
     }

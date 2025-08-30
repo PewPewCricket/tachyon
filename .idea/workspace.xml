@@ -19,18 +19,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a31318e7-e4c5-418e-9a2b-74205e1ea92c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/include/tachyon/pmm/buddy.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mm/pmm/bootstrap.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mm/pmm/buddy.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/mm/pmm/utilities.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/lib/math.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/math.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/compile_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/compile_commands.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/tachyon/bootreqs.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/limine/requests.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/tachyon/memory.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/tachyon/memory.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/tachyon/phys_mem.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/tachyon/pmm/pmem.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/boot/boot.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/boot/boot.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/boot/bootreqs.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/boot/limine_requests.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mm/init.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/mm/init.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/tachyon/pmm/buddy.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/tachyon/pmm/buddy.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mm/pmm/bootstrap.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/mm/pmm/bootstrap.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mm/pmm/buddy.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/mm/pmm/buddy.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -164,7 +159,7 @@
       <option name="presentableId" value="Default" />
       <updated>1756158945293</updated>
       <workItem from="1756158946320" duration="10299000" />
-      <workItem from="1756242802036" duration="67685000" />
+      <workItem from="1756242802036" duration="76100000" />
     </task>
     <servers />
   </component>
