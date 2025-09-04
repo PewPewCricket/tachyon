@@ -7,9 +7,10 @@
 #include <limine/requests.h>
 #include <drivers/fbcon.h>
 #include <tachyon/printk.h>
-#include <tachyon/memory.h>
-#include <tachyon/pmm/pmem.h>
 #include <limine/requests.h>
+#include <tachyon/mm/memory.h>
+
+#include "tachyon/panic.h"
 
 static volatile __limine_requests_start LIMINE_REQUESTS_START_MARKER;
 static volatile __limine_requests_end LIMINE_REQUESTS_END_MARKER;
@@ -38,5 +39,6 @@ void boot(void) {
 
     mm_init();
 
-    hcf();
+    printk(KERN_EMERG, "!!! system halted !!!\n");
+    panic();
 }

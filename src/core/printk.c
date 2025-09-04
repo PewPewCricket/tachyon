@@ -1,16 +1,9 @@
-#include <lib/ringbuf.h>
 #include <drivers/fbcon.h>
 #include <lib/string.h>
 #include <stdarg.h>
 #include <tachyon/printk.h>
-#include <stdbool.h>
-
-#define PRINTK_MAX_CHARS 32768
 
 static enum printk_log_level loglevel = KERN_DEBUG;
-static bool screen_log = true;
-
-static RINGBUF_STATIC(printk_ringbuf, PRINTK_MAX_CHARS, char);
 
 void printk(const enum  printk_log_level level, const char *fmt, ...) {
     if (level > loglevel) return;
