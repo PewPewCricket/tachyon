@@ -136,8 +136,11 @@ void mm_init() {
 	_alloc_static_mm_data();
 	_init_mm_physical_metadata();
 
+	printk(KERN_DEBUG, "%llu MiB available (%llu bytes).\n", _get_total_usable_mem() / (1024 * 1024), _get_total_usable_mem());
+
 	for (uint64_t i = 0; i < mem_regions_count; i++) {
-		printk(KERN_DEBUG, "region %llu:\tbase pfn: %llu\tspan: %llu pages\n\t\tbase: %p\tto: %p\tlength: %llu\n",
+		printk(KERN_DEBUG, "region %llu:\tbase pfn: %llu\t\tspan: %llu pages\n\t\tbase: %p\t\tto: %p\t\t"
+					 "length: %llu\n",
 			i, mem_regions[i].map->pfn, mem_regions[i].length, PFN_TO_ADDR(mem_regions[i].map->pfn), PFN_TO_ADDR(mem_regions[i].map->pfn) + PFN_TO_ADDR(mem_regions[i].length), mem_regions[i].length * PAGE_SIZE);
 	}
 }
