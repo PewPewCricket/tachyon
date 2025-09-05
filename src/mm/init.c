@@ -108,13 +108,8 @@ static void _init_mm_physical_metadata() {
 		if (!(type == LIMINE_MEMMAP_USABLE || type == LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE || type == LIMINE_MEMMAP_ACPI_RECLAIMABLE))
 			continue;
 
-		mem_regions[region_idx].map = &mem_map[page_idx];
-		if (mem_map[page_idx].flags & PG_RESERVED) {
-			mem_regions[region_idx].map--;
-			length--;
-		}
-
 		// Setup page structs
+		mem_regions[region_idx].map = &mem_map[page_idx];
 		for (uintptr_t j = 0; j < page_len; j++) {
 			mem_map[page_idx].pfn = base_pfn + j;
 			page_idx++;
