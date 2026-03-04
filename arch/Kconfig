@@ -1,0 +1,16 @@
+menu "Architecture"
+
+    choice
+        prompt "Target Architecture"
+        default ARCH_X86_64
+
+        config ARCH_X86_64
+            bool "x86_64"
+
+    endchoice
+
+    if ARCH_X86_64
+        source "arch/x86_64/Kconfig"
+    endif
+
+endmenu

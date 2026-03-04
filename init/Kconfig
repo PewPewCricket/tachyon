@@ -1,0 +1,6 @@
+menu "Demo"
+    config FUN_PRINT_SILLY
+        bool "Print a line across the screen on boot."
+        default n
+
+endmenu

@@ -1,0 +1,2 @@
+obj-y += init.o
+obj-$(CONFIG_FUN_PRINT_SILLY) += silly.o

@@ -1,0 +1,10 @@
+menu "Debugging"
+    config DEBUG_PORT_E9
+        bool "Enable logging to port e9 for VM debugging."
+        depends on ARCH_X86_64
+        default n
+        help
+            Enable debug logging to port 0xe9.
+            Supported by QEMU and Bochs.
+
+endmenu
