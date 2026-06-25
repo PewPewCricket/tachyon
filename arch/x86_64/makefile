@@ -1,1 +1,0 @@
-include $(TOPDIR)/scripts/kbuild_generic.mk

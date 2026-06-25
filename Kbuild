@@ -1,1 +1,1 @@
-subdir-y += init arch
+subdir-y += src

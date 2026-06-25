@@ -1,5 +1,3 @@
 mainmenu "Tachyon Kernel Configuration"
 
-source "arch/Kconfig"
-
-source "init/Kconfig"
+rsource "src/Kconfig"
