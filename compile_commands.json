@@ -1,0 +1,53 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-ffreestanding",
+      "-Wall",
+      "-Wextra",
+      "-I/home/pewpewcricket/Dev/tachyon/include",
+      "-I/home/pewpewcricket/Dev/tachyon/build/include",
+      "-c",
+      "-o",
+      "/home/pewpewcricket/Dev/tachyon/build/src/init/init.o",
+      "init.c"
+    ],
+    "directory": "/home/pewpewcricket/Dev/tachyon/src/init",
+    "file": "/home/pewpewcricket/Dev/tachyon/src/init/init.c",
+    "output": "/home/pewpewcricket/Dev/tachyon/build/src/init/init.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-ffreestanding",
+      "-Wall",
+      "-Wextra",
+      "-I/home/pewpewcricket/Dev/tachyon/include",
+      "-I/home/pewpewcricket/Dev/tachyon/build/include",
+      "-c",
+      "-o",
+      "/home/pewpewcricket/Dev/tachyon/build/src/init/silly.o",
+      "silly.c"
+    ],
+    "directory": "/home/pewpewcricket/Dev/tachyon/src/init",
+    "file": "/home/pewpewcricket/Dev/tachyon/src/init/silly.c",
+    "output": "/home/pewpewcricket/Dev/tachyon/build/src/init/silly.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-ffreestanding",
+      "-Wall",
+      "-Wextra",
+      "-I/home/pewpewcricket/Dev/tachyon/include",
+      "-I/home/pewpewcricket/Dev/tachyon/build/include",
+      "-c",
+      "-o",
+      "/home/pewpewcricket/Dev/tachyon/build/src/arch/x86_64/entry.o",
+      "entry.c"
+    ],
+    "directory": "/home/pewpewcricket/Dev/tachyon/src/arch/x86_64",
+    "file": "/home/pewpewcricket/Dev/tachyon/src/arch/x86_64/entry.c",
+    "output": "/home/pewpewcricket/Dev/tachyon/build/src/arch/x86_64/entry.o"
+  }
+]

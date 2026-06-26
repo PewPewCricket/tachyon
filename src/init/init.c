@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <limine.h>
+#include <limine/limine.h>
 #include <generated/autoconf.h>
 
 // Set the base revision to 4, this is recommended as this is the latest
